@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MenuBarView: View {
     @Environment(AppState.self) private var appState
+    @State private var selectedTab = 0
 
     var body: some View {
         VStack(spacing: 0) {
@@ -9,20 +10,29 @@ struct MenuBarView: View {
 
             Divider()
 
-            ScrollView {
-                LazyVStack(spacing: 8) {
-                    ForEach(appState.tools) { toolStatus in
-                        ToolRowView(toolStatus: toolStatus)
-                    }
-                }
-                .padding(.vertical, 8)
+            Picker("", selection: $selectedTab) {
+                Text("CLI Tools").tag(0)
+                Text("NPM Packages").tag(1)
             }
-            .frame(maxHeight: 300)
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+
+            Divider()
+
+            Group {
+                if selectedTab == 0 {
+                    CLIToolsTabView()
+                } else {
+                    NpmPackagesTabView()
+                }
+            }
+            .frame(maxHeight: 600)
 
             Divider()
 
             FooterView()
         }
-        .frame(width: 320)
+        .frame(width: 380)
     }
 }

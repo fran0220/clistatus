@@ -5,7 +5,9 @@ import SwiftUI
 @MainActor
 final class AppState {
     var tools: [ToolStatus]
+    var npmPackages: [NpmPackageStatus] = []
     var isChecking = false
+    var isCheckingNpm = false
     var lastCheckTime: Date?
     var checkInterval: TimeInterval = 3600 {
         didSet {
@@ -17,6 +19,7 @@ final class AppState {
 
     private let versionChecker = VersionChecker()
     private let updateService = UpdateService()
+    private let npmService = NpmPackageService()
     private var checkTimer: Timer?
 
     init() {
@@ -25,10 +28,13 @@ final class AppState {
         Task {
             await NotificationService.shared.requestAuthorization()
             await checkAll()
+            await checkNpmPackages()
             startScheduledChecks()
         }
     }
 
+    // MARK: - CLI Tools
+    
     func checkAll() async {
         guard !isChecking else { return }
         isChecking = true
@@ -77,10 +83,13 @@ final class AppState {
 
         switch result {
         case .success:
+            try? await Task.sleep(for: .seconds(1))
             let checkResult = await versionChecker.check(tool)
             if let version = checkResult.current {
                 toolStatus.state = .upToDate(current: version)
                 NotificationService.shared.sendUpdateComplete(tool: tool, newVersion: version)
+            } else {
+                toolStatus.state = .error(message: "Update completed but version check failed")
             }
         case .failure(let error):
             toolStatus.state = .error(message: error.localizedDescription)
@@ -97,10 +106,13 @@ final class AppState {
 
         switch result {
         case .success:
+            try? await Task.sleep(for: .seconds(1))
             let checkResult = await versionChecker.check(tool)
             if let version = checkResult.current {
                 toolStatus.state = .upToDate(current: version)
                 NotificationService.shared.sendInstallComplete(tool: tool, version: version)
+            } else {
+                toolStatus.state = .error(message: "Install completed but version check failed")
             }
         case .failure(let error):
             toolStatus.state = .error(message: error.localizedDescription)
@@ -108,10 +120,106 @@ final class AppState {
         }
     }
 
+    // MARK: - NPM Packages
+    
+    func checkNpmPackages() async {
+        guard !isCheckingNpm else { return }
+        isCheckingNpm = true
+        
+        do {
+            let packages = try await npmService.listGlobals()
+            
+            npmPackages = packages.map { pkg in
+                NpmPackageStatus(name: pkg.name, current: pkg.current)
+            }
+            
+            for pkg in npmPackages {
+                pkg.state = .checking
+            }
+            
+            await withTaskGroup(of: (String, VersionInfo?).self) { group in
+                for pkg in npmPackages {
+                    group.addTask {
+                        let latest = await self.npmService.fetchLatestVersion(name: pkg.name)
+                        return (pkg.name, latest)
+                    }
+                }
+                
+                for await (name, latest) in group {
+                    guard let pkg = npmPackages.first(where: { $0.name == name }) else { continue }
+                    
+                    if let current = pkg.currentVersion {
+                        if let latest = latest, current < latest {
+                            pkg.state = .updateAvailable(current: current, latest: latest)
+                        } else {
+                            pkg.state = .upToDate(current: current)
+                        }
+                    } else {
+                        pkg.state = .error(message: "Failed to parse version")
+                    }
+                }
+            }
+        } catch {
+            for pkg in npmPackages {
+                pkg.state = .error(message: error.localizedDescription)
+            }
+        }
+        
+        isCheckingNpm = false
+    }
+    
+    func installNpmPackage(spec: String) async {
+        let tempStatus = NpmPackageStatus(name: spec)
+        tempStatus.state = .updating
+        npmPackages.insert(tempStatus, at: 0)
+        
+        do {
+            try await npmService.install(spec: spec)
+            await checkNpmPackages()
+        } catch {
+            tempStatus.state = .error(message: error.localizedDescription)
+        }
+    }
+    
+    func upgradeNpmPackage(name: String) async {
+        guard let pkg = npmPackages.first(where: { $0.name == name }) else { return }
+        
+        pkg.state = .updating
+        
+        do {
+            try await npmService.upgrade(name: name)
+            try? await Task.sleep(for: .seconds(1))
+            
+            if let latest = await npmService.fetchLatestVersion(name: name) {
+                pkg.state = .upToDate(current: latest)
+            } else {
+                pkg.state = .error(message: "Upgrade completed but version check failed")
+            }
+        } catch {
+            pkg.state = .error(message: error.localizedDescription)
+        }
+    }
+    
+    func uninstallNpmPackage(name: String) async {
+        guard let pkg = npmPackages.first(where: { $0.name == name }) else { return }
+        
+        pkg.state = .uninstalling
+        
+        do {
+            try await npmService.uninstall(name: name)
+            npmPackages.removeAll { $0.name == name }
+        } catch {
+            pkg.state = .error(message: error.localizedDescription)
+        }
+    }
+
+    // MARK: - Timer
+    
     private func startScheduledChecks() {
         checkTimer = Timer.scheduledTimer(withTimeInterval: checkInterval, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 await self?.checkAll()
+                await self?.checkNpmPackages()
             }
         }
     }
