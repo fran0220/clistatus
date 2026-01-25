@@ -1,0 +1,4 @@
+.ace-tool/
+.build/
+.DS_Store
+*.app
