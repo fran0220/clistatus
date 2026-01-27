@@ -1,43 +1,38 @@
 //
-//  NpmPackagesTabView.swift
+//  BrewPackagesTabView.swift
 //  CLIStatusApp
 //
-//  NPM 包标签页视图
-//  显示全局 NPM 包列表，支持安装新包
+//  Homebrew 包标签页视图
+//  显示已安装的 Homebrew 包列表，支持安装新包
 //
 
 import SwiftUI
 
-struct NpmPackagesTabView: View {
+struct BrewPackagesTabView: View {
     @Environment(AppState.self) private var appState
     @State private var installSpec = ""
     @State private var isInstalling = false
-    
+
     var body: some View {
         VStack(spacing: AppSpacing.md) {
             sectionHeader
-            
-            // 安装新包输入区
+
             installInputSection
-            
-            // 包列表区域
+
             packageListContent
         }
         .padding(AppSpacing.md)
     }
-    
-    // MARK: - 安装输入区
-    
+
     private var installInputSection: some View {
         HStack(spacing: AppSpacing.sm) {
-            // 输入框
             HStack(spacing: AppSpacing.xs) {
-                Image(systemName: "shippingbox")
+                Image(systemName: "cup.and.saucer")
                     .font(.system(size: AppSize.Icon.sm))
                     .symbolRenderingMode(.hierarchical)
                     .foregroundStyle(Color.textTertiary)
-                
-                TextField("包名称（如 lodash@latest）", text: $installSpec)
+
+                TextField("包名称（如 wget 或 cask:iterm2）", text: $installSpec)
                     .textFieldStyle(.plain)
                     .font(.appBody)
             }
@@ -51,8 +46,7 @@ struct NpmPackagesTabView: View {
                 RoundedRectangle(cornerRadius: AppCornerRadius.sm)
                     .stroke(Color.white.opacity(0.25), lineWidth: 0.6)
             }
-            
-            // 安装按钮
+
             ActionButton(
                 "安装",
                 icon: "plus.circle",
@@ -64,85 +58,74 @@ struct NpmPackagesTabView: View {
                 guard !installSpec.isEmpty else { return }
                 isInstalling = true
                 Task {
-                    await appState.installNpmPackage(spec: installSpec)
+                    await appState.installBrewPackage(spec: installSpec)
                     installSpec = ""
                     isInstalling = false
                 }
             }
         }
     }
-    
-    // MARK: - 包列表内容
-    
+
     @ViewBuilder
     private var packageListContent: some View {
-        if appState.isCheckingNpm && appState.npmPackages.isEmpty {
+        if appState.isCheckingBrew && appState.brewPackages.isEmpty {
             loadingView
-        } else if appState.npmPackages.isEmpty {
+        } else if appState.brewPackages.isEmpty {
             emptyStateView
         } else {
             packageListView
         }
     }
-    
-    // MARK: - 加载中视图
-    
+
     private var loadingView: some View {
         VStack(spacing: AppSpacing.md) {
             ProgressView()
                 .controlSize(.regular)
-            
-            Text("正在加载包列表...")
+
+            Text("正在加载 Homebrew 包...")
                 .font(.appSubheadline)
                 .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    
-    // MARK: - 空状态视图
-    
+
     private var emptyStateView: some View {
         VStack(spacing: AppSpacing.lg) {
-            // 图标
             ZStack {
                 Circle()
-                    .fill(Color.npmRed.opacity(0.08))
+                    .fill(Color.brewAmber.opacity(0.08))
                     .frame(width: 72, height: 72)
-                
-                Image(systemName: "shippingbox")
+
+                Image(systemName: "cup.and.saucer.fill")
                     .font(.system(size: 28, weight: .medium))
                     .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(Color.npmRed)
+                    .foregroundStyle(Color.brewAmber)
             }
-            
-            // 文字说明
+
             VStack(spacing: AppSpacing.sm) {
-                Text("暂无全局 NPM 包")
+                Text("暂无 Homebrew 包")
                     .font(.appTitle2)
                     .foregroundStyle(Color.textPrimary)
-                
-                Text("还没有安装全局 NPM 包。\n在上方输入包名进行安装。")
+
+                Text("还没有安装 Homebrew 包。\n在上方输入包名进行安装。")
                     .font(.appSubheadline)
                     .foregroundStyle(Color.textSecondary)
                     .multilineTextAlignment(.center)
             }
-            
-            // 刷新按钮
+
             ActionButton("刷新列表", icon: "arrow.clockwise", style: .secondary, size: .medium) {
-                Task { await appState.checkNpmPackages() }
+                Task { await appState.checkBrewPackages() }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(AppSpacing.xl)
     }
-    
-    // MARK: - 包列表视图
-    
+
     private var packageListView: some View {
         ScrollView {
             LazyVStack(spacing: AppSpacing.xs) {
-                ForEach(appState.npmPackages) { package in
-                    NpmPackageRowView(package: package)
+                ForEach(appState.brewPackages) { package in
+                    BrewPackageRowView(package: package)
                 }
             }
             .padding(.vertical, AppSpacing.sm)
@@ -151,13 +134,13 @@ struct NpmPackagesTabView: View {
 
     private var sectionHeader: some View {
         HStack(spacing: AppSpacing.sm) {
-            Text("NPM 包")
+            Text("Homebrew")
                 .font(.appTitle2)
                 .foregroundStyle(Color.textPrimary)
-            
+
             Spacer()
-            
-            if appState.npmPackages.isEmpty {
+
+            if appState.brewPackages.isEmpty {
                 StatusBadge(type: .info, text: "暂无包", size: .small)
             } else if packagesWithUpdates > 0 {
                 StatusBadge(type: .updateAvailable, text: "可更新 \(packagesWithUpdates)", size: .small)
@@ -168,7 +151,7 @@ struct NpmPackagesTabView: View {
     }
 
     private var packagesWithUpdates: Int {
-        appState.npmPackages.filter { package in
+        appState.brewPackages.filter { package in
             if case .updateAvailable = package.state {
                 return true
             }
@@ -177,10 +160,8 @@ struct NpmPackagesTabView: View {
     }
 }
 
-// MARK: - 预览
-
 #Preview {
-    NpmPackagesTabView()
+    BrewPackagesTabView()
         .environment(AppState())
         .frame(width: 380, height: 400)
 }

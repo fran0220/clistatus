@@ -1,43 +1,38 @@
 //
-//  NpmPackagesTabView.swift
+//  NpxPackagesTabView.swift
 //  CLIStatusApp
 //
-//  NPM 包标签页视图
-//  显示全局 NPM 包列表，支持安装新包
+//  NPX 包标签页视图
+//  管理需要追踪的 NPX 包
 //
 
 import SwiftUI
 
-struct NpmPackagesTabView: View {
+struct NpxPackagesTabView: View {
     @Environment(AppState.self) private var appState
-    @State private var installSpec = ""
-    @State private var isInstalling = false
-    
+    @State private var packageName = ""
+    @State private var isAdding = false
+
     var body: some View {
         VStack(spacing: AppSpacing.md) {
             sectionHeader
-            
-            // 安装新包输入区
-            installInputSection
-            
-            // 包列表区域
+
+            addInputSection
+
             packageListContent
         }
         .padding(AppSpacing.md)
     }
-    
-    // MARK: - 安装输入区
-    
-    private var installInputSection: some View {
+
+    private var addInputSection: some View {
         HStack(spacing: AppSpacing.sm) {
-            // 输入框
             HStack(spacing: AppSpacing.xs) {
-                Image(systemName: "shippingbox")
+                Image(systemName: "terminal")
                     .font(.system(size: AppSize.Icon.sm))
                     .symbolRenderingMode(.hierarchical)
                     .foregroundStyle(Color.textTertiary)
-                
-                TextField("包名称（如 lodash@latest）", text: $installSpec)
+
+                TextField("包名称（如 eslint）", text: $packageName)
                     .textFieldStyle(.plain)
                     .font(.appBody)
             }
@@ -51,98 +46,86 @@ struct NpmPackagesTabView: View {
                 RoundedRectangle(cornerRadius: AppCornerRadius.sm)
                     .stroke(Color.white.opacity(0.25), lineWidth: 0.6)
             }
-            
-            // 安装按钮
+
             ActionButton(
-                "安装",
+                "添加",
                 icon: "plus.circle",
                 style: .primary,
                 size: .medium,
-                isLoading: isInstalling,
-                isDisabled: installSpec.isEmpty
+                isLoading: isAdding,
+                isDisabled: packageName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             ) {
-                guard !installSpec.isEmpty else { return }
-                isInstalling = true
+                guard !packageName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+                isAdding = true
                 Task {
-                    await appState.installNpmPackage(spec: installSpec)
-                    installSpec = ""
-                    isInstalling = false
+                    await appState.addNpxPackage(name: packageName)
+                    packageName = ""
+                    isAdding = false
                 }
             }
         }
     }
-    
-    // MARK: - 包列表内容
-    
+
     @ViewBuilder
     private var packageListContent: some View {
-        if appState.isCheckingNpm && appState.npmPackages.isEmpty {
+        if appState.isCheckingNpx && appState.npxPackages.isEmpty {
             loadingView
-        } else if appState.npmPackages.isEmpty {
+        } else if appState.npxPackages.isEmpty {
             emptyStateView
         } else {
             packageListView
         }
     }
-    
-    // MARK: - 加载中视图
-    
+
     private var loadingView: some View {
         VStack(spacing: AppSpacing.md) {
             ProgressView()
                 .controlSize(.regular)
-            
-            Text("正在加载包列表...")
+
+            Text("正在加载 NPX 包...")
                 .font(.appSubheadline)
                 .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    
-    // MARK: - 空状态视图
-    
+
     private var emptyStateView: some View {
         VStack(spacing: AppSpacing.lg) {
-            // 图标
             ZStack {
                 Circle()
-                    .fill(Color.npmRed.opacity(0.08))
+                    .fill(Color.brandPrimary.opacity(0.08))
                     .frame(width: 72, height: 72)
-                
-                Image(systemName: "shippingbox")
+
+                Image(systemName: "terminal")
                     .font(.system(size: 28, weight: .medium))
                     .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(Color.npmRed)
+                    .foregroundStyle(Color.brandPrimary)
             }
-            
-            // 文字说明
+
             VStack(spacing: AppSpacing.sm) {
-                Text("暂无全局 NPM 包")
+                Text("暂无 NPX 包")
                     .font(.appTitle2)
                     .foregroundStyle(Color.textPrimary)
-                
-                Text("还没有安装全局 NPM 包。\n在上方输入包名进行安装。")
+
+                Text("添加需要追踪的 NPX 包。\n我们会检测最新版本。")
                     .font(.appSubheadline)
                     .foregroundStyle(Color.textSecondary)
                     .multilineTextAlignment(.center)
             }
-            
-            // 刷新按钮
+
             ActionButton("刷新列表", icon: "arrow.clockwise", style: .secondary, size: .medium) {
-                Task { await appState.checkNpmPackages() }
+                Task { await appState.checkNpxPackages() }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(AppSpacing.xl)
     }
-    
-    // MARK: - 包列表视图
-    
+
     private var packageListView: some View {
         ScrollView {
             LazyVStack(spacing: AppSpacing.xs) {
-                ForEach(appState.npmPackages) { package in
-                    NpmPackageRowView(package: package)
+                ForEach(appState.npxPackages) { package in
+                    NpxPackageRowView(package: package)
                 }
             }
             .padding(.vertical, AppSpacing.sm)
@@ -151,14 +134,14 @@ struct NpmPackagesTabView: View {
 
     private var sectionHeader: some View {
         HStack(spacing: AppSpacing.sm) {
-            Text("NPM 包")
+            Text("NPX 包")
                 .font(.appTitle2)
                 .foregroundStyle(Color.textPrimary)
-            
+
             Spacer()
-            
-            if appState.npmPackages.isEmpty {
-                StatusBadge(type: .info, text: "暂无包", size: .small)
+
+            if appState.npxPackages.isEmpty {
+                StatusBadge(type: .info, text: "未追踪", size: .small)
             } else if packagesWithUpdates > 0 {
                 StatusBadge(type: .updateAvailable, text: "可更新 \(packagesWithUpdates)", size: .small)
             } else {
@@ -168,7 +151,7 @@ struct NpmPackagesTabView: View {
     }
 
     private var packagesWithUpdates: Int {
-        appState.npmPackages.filter { package in
+        appState.npxPackages.filter { package in
             if case .updateAvailable = package.state {
                 return true
             }
@@ -177,10 +160,8 @@ struct NpmPackagesTabView: View {
     }
 }
 
-// MARK: - 预览
-
 #Preview {
-    NpmPackagesTabView()
+    NpxPackagesTabView()
         .environment(AppState())
         .frame(width: 380, height: 400)
 }

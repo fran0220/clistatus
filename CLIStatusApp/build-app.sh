@@ -11,8 +11,16 @@ echo "Packaging..."
 APP_DIR=".build/CLIStatusApp.app"
 rm -rf "$APP_DIR"
 mkdir -p "$APP_DIR/Contents/MacOS"
+mkdir -p "$APP_DIR/Contents/Resources"
 
 cp .build/release/CLIStatusApp "$APP_DIR/Contents/MacOS/"
+
+# Copy SwiftPM resource bundles if present
+for bundle in .build/release/*.bundle; do
+    if [ -d "$bundle" ]; then
+        cp -R "$bundle" "$APP_DIR/Contents/Resources/"
+    fi
+done
 
 cat > "$APP_DIR/Contents/Info.plist" << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>

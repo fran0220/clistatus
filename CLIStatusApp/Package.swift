@@ -13,7 +13,16 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "CLIStatusApp",
-            path: "CLIStatusApp"
+            path: "CLIStatusApp",
+            exclude: ["Info.plist"],
+            resources: [
+                .process("Resources")
+            ]
+        ),
+        .testTarget(
+            name: "CLIStatusAppTests",
+            dependencies: ["CLIStatusApp"],
+            path: "Tests/CLIStatusAppTests"
         )
     ]
 )
