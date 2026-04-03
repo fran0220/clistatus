@@ -1,194 +1,95 @@
-//
-//  ToolRowView.swift
-//  CLIStatusApp
-//
-//  CLI 工具行视图
-//  显示工具图标、名称、状态和操作按钮
-//
-
 import SwiftUI
 
 struct ToolRowView: View {
     @Environment(AppState.self) private var appState
     @Bindable var toolStatus: ToolStatus
-    
-    var body: some View {
-        ListItemCard(statusType: cardStatusType) {
-            HStack(spacing: AppSpacing.md) {
-                // 工具图标
-                toolIcon
-                
-                // 工具信息
-                VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                    Text(toolStatus.tool.displayName)
-                        .font(.itemTitle)
-                        .foregroundStyle(Color.textPrimary)
-                    
-                    versionText
-                }
-                
-                Spacer()
-                
-                // 状态和操作按钮
-                actionContent
-            }
-        }
-        .padding(.horizontal, AppSpacing.sm)
-    }
-    
-    // MARK: - 工具图标
-    
-    /// 工具专属图标视图
-    private var toolIcon: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: AppCornerRadius.sm)
-                .fill(.ultraThinMaterial)
-                .frame(width: AppSize.Icon.toolContainer, height: AppSize.Icon.toolContainer)
-                .overlay {
-                    RoundedRectangle(cornerRadius: AppCornerRadius.sm)
-                        .stroke(Color.white.opacity(0.35), lineWidth: 0.8)
-                }
 
+    var body: some View {
+        HStack(spacing: 10) {
+            toolIcon
+            VStack(alignment: .leading, spacing: 2) {
+                Text(toolStatus.tool.displayName)
+                    .font(.system(size: 13, weight: .medium))
+                versionText
+            }
+            Spacer()
+            actionContent
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(RoundedRectangle(cornerRadius: 8).fill(.quaternary.opacity(0.5)))
+    }
+
+    private var toolIcon: some View {
+        Group {
             if let officialIcon = toolStatus.tool.officialIconImage {
                 officialIcon
                     .resizable()
                     .scaledToFit()
-                    .padding(6)
-                    .frame(width: AppSize.Icon.toolContainer, height: AppSize.Icon.toolContainer)
+                    .frame(width: 28, height: 28)
             } else {
                 Image(systemName: toolStatus.tool.iconName)
-                    .font(.system(size: AppSize.Icon.lg, weight: .medium))
-                    .symbolRenderingMode(.hierarchical)
+                    .font(.system(size: 18))
                     .foregroundStyle(toolStatus.tool.iconColor)
+                    .frame(width: 28, height: 28)
             }
         }
     }
-    
-    // MARK: - 版本文本
-    
+
     @ViewBuilder
     private var versionText: some View {
         switch toolStatus.state {
         case .idle, .checking:
-            HStack(spacing: AppSpacing.xs) {
-                ProgressView()
-                    .controlSize(.mini)
-                Text("检查中...")
-                    .font(.itemSubtitle)
-                    .foregroundStyle(Color.textTertiary)
+            HStack(spacing: 4) {
+                ProgressView().controlSize(.mini)
+                Text("检查中...").font(.caption).foregroundStyle(.tertiary)
             }
-            
         case .notInstalled:
-            StatusBadge.notInstalled()
-            
+            Text("未安装").font(.caption).foregroundStyle(.red)
         case .upToDate(let current):
-            HStack(spacing: AppSpacing.xs) {
-                Text("v\(current.display)")
-                    .font(.version)
-                    .foregroundStyle(Color.statusSuccess)
-            }
-            
+            Text("v\(current.display)").font(.system(size: 11, design: .monospaced)).foregroundStyle(.green)
         case .updateAvailable(let current, let latest):
-            HStack(spacing: AppSpacing.xs) {
-                Text("v\(current.display)")
-                    .font(.version)
-                    .foregroundStyle(Color.textSecondary)
-                
-                Image(systemName: "arrow.right")
-                    .font(.system(size: 8, weight: .bold))
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(Color.statusWarning)
-                
-                Text("v\(latest.display)")
-                    .font(.version)
-                    .foregroundStyle(Color.statusSuccess)
+            HStack(spacing: 4) {
+                Text("v\(current.display)").font(.system(size: 11, design: .monospaced)).foregroundStyle(.secondary)
+                Image(systemName: "arrow.right").font(.system(size: 8, weight: .bold)).foregroundStyle(.orange)
+                Text("v\(latest.display)").font(.system(size: 11, design: .monospaced)).foregroundStyle(.green)
             }
-            
         case .updating:
-            HStack(spacing: AppSpacing.xs) {
-                ProgressView()
-                    .controlSize(.mini)
-                Text("更新中...")
-                    .font(.itemSubtitle)
-                    .foregroundStyle(Color.textTertiary)
+            HStack(spacing: 4) {
+                ProgressView().controlSize(.mini)
+                Text("更新中...").font(.caption).foregroundStyle(.tertiary)
             }
-            
         case .installing:
-            HStack(spacing: AppSpacing.xs) {
-                ProgressView()
-                    .controlSize(.mini)
-                Text("安装中...")
-                    .font(.itemSubtitle)
-                    .foregroundStyle(Color.textTertiary)
+            HStack(spacing: 4) {
+                ProgressView().controlSize(.mini)
+                Text("安装中...").font(.caption).foregroundStyle(.tertiary)
             }
-            
         case .error(let message):
-            Text(message)
-                .font(.itemSubtitle)
-                .foregroundStyle(Color.statusError)
-                .lineLimit(1)
+            Text(message).font(.caption).foregroundStyle(.red).lineLimit(1)
         }
     }
-    
-    // MARK: - 操作按钮
-    
+
     @ViewBuilder
     private var actionContent: some View {
         switch toolStatus.state {
         case .checking, .updating, .installing:
-            ProgressView()
-                .controlSize(.small)
-                .frame(width: 70)
-                
+            ProgressView().controlSize(.small)
         case .notInstalled:
-            ActionButton("安装", icon: "arrow.down.circle", style: .primary, size: .small) {
-                Task { await appState.install(toolStatus.tool) }
-            }
-            
+            Button("安装") { Task { await appState.install(toolStatus.tool) } }
+                .controlSize(.small)
         case .updateAvailable:
-            ActionButton("更新", icon: "arrow.up.circle", style: .primary, size: .small) {
-                Task { await appState.update(toolStatus.tool) }
-            }
-            
+            Button("更新") { Task { await appState.update(toolStatus.tool) } }
+                .controlSize(.small)
+                .tint(.accentColor)
         case .upToDate:
-            StatusBadge.installed()
-            
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(.green)
+                .font(.system(size: 14))
         case .error:
-            ActionButton("重试", icon: "arrow.clockwise", style: .secondary, size: .small) {
-                Task { await appState.checkAll() }
-            }
-            
+            Button("重试") { Task { await appState.checkAll() } }
+                .controlSize(.small)
         case .idle:
             EmptyView()
-                .frame(width: 70)
         }
     }
-    
-    // MARK: - 卡片状态类型
-    
-    /// 根据工具状态返回卡片状态类型
-    private var cardStatusType: StatusType? {
-        switch toolStatus.state {
-        case .updateAvailable:
-            return .updateAvailable
-        case .error:
-            return .error
-        case .notInstalled:
-            return .notInstalled
-        default:
-            return nil
-        }
-    }
-}
-
-// MARK: - 预览
-
-#Preview {
-    VStack(spacing: AppSpacing.sm) {
-        // 预览需要创建模拟数据
-        Text("ToolRowView Preview")
-            .font(.appTitle)
-    }
-    .padding()
-    .frame(width: 380)
 }

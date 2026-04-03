@@ -32,7 +32,7 @@ cat > "$APP_DIR/Contents/Info.plist" << 'EOF'
     <key>CFBundleExecutable</key>
     <string>CLIStatusApp</string>
     <key>CFBundleIdentifier</key>
-    <string>com.local.CLIStatusApp</string>
+    <string>com.fan.CLIStatusApp</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>

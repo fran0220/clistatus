@@ -1,186 +1,52 @@
-//
-//  NpmPackagesTabView.swift
-//  CLIStatusApp
-//
-//  NPM 包标签页视图
-//  显示全局 NPM 包列表，支持安装新包
-//
-
 import SwiftUI
 
 struct NpmPackagesTabView: View {
     @Environment(AppState.self) private var appState
     @State private var installSpec = ""
     @State private var isInstalling = false
-    
+
     var body: some View {
-        VStack(spacing: AppSpacing.md) {
-            sectionHeader
-            
-            // 安装新包输入区
-            installInputSection
-            
-            // 包列表区域
-            packageListContent
-        }
-        .padding(AppSpacing.md)
-    }
-    
-    // MARK: - 安装输入区
-    
-    private var installInputSection: some View {
-        HStack(spacing: AppSpacing.sm) {
-            // 输入框
-            HStack(spacing: AppSpacing.xs) {
-                Image(systemName: "shippingbox")
-                    .font(.system(size: AppSize.Icon.sm))
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(Color.textTertiary)
-                
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
                 TextField("包名称（如 lodash@latest）", text: $installSpec)
-                    .textFieldStyle(.plain)
-                    .font(.appBody)
-            }
-            .padding(.horizontal, AppSpacing.md)
-            .padding(.vertical, AppSpacing.sm)
-            .background {
-                RoundedRectangle(cornerRadius: AppCornerRadius.sm)
-                    .fill(.ultraThinMaterial)
-            }
-            .overlay {
-                RoundedRectangle(cornerRadius: AppCornerRadius.sm)
-                    .stroke(Color.white.opacity(0.25), lineWidth: 0.6)
-            }
-            
-            // 安装按钮
-            ActionButton(
-                "安装",
-                icon: "plus.circle",
-                style: .primary,
-                size: .medium,
-                isLoading: isInstalling,
-                isDisabled: installSpec.isEmpty
-            ) {
-                guard !installSpec.isEmpty else { return }
-                isInstalling = true
-                Task {
-                    await appState.installNpmPackage(spec: installSpec)
-                    installSpec = ""
-                    isInstalling = false
-                }
-            }
-        }
-    }
-    
-    // MARK: - 包列表内容
-    
-    @ViewBuilder
-    private var packageListContent: some View {
-        if appState.isCheckingNpm && appState.npmPackages.isEmpty {
-            loadingView
-        } else if appState.npmPackages.isEmpty {
-            emptyStateView
-        } else {
-            packageListView
-        }
-    }
-    
-    // MARK: - 加载中视图
-    
-    private var loadingView: some View {
-        VStack(spacing: AppSpacing.md) {
-            ProgressView()
-                .controlSize(.regular)
-            
-            Text("正在加载包列表...")
-                .font(.appSubheadline)
-                .foregroundStyle(Color.textSecondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-    
-    // MARK: - 空状态视图
-    
-    private var emptyStateView: some View {
-        VStack(spacing: AppSpacing.lg) {
-            // 图标
-            ZStack {
-                Circle()
-                    .fill(Color.npmRed.opacity(0.08))
-                    .frame(width: 72, height: 72)
-                
-                Image(systemName: "shippingbox")
-                    .font(.system(size: 28, weight: .medium))
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(Color.npmRed)
-            }
-            
-            // 文字说明
-            VStack(spacing: AppSpacing.sm) {
-                Text("暂无全局 NPM 包")
-                    .font(.appTitle2)
-                    .foregroundStyle(Color.textPrimary)
-                
-                Text("还没有安装全局 NPM 包。\n在上方输入包名进行安装。")
-                    .font(.appSubheadline)
-                    .foregroundStyle(Color.textSecondary)
-                    .multilineTextAlignment(.center)
-            }
-            
-            // 刷新按钮
-            ActionButton("刷新列表", icon: "arrow.clockwise", style: .secondary, size: .medium) {
-                Task { await appState.checkNpmPackages() }
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(AppSpacing.xl)
-    }
-    
-    // MARK: - 包列表视图
-    
-    private var packageListView: some View {
-        ScrollView {
-            LazyVStack(spacing: AppSpacing.xs) {
-                ForEach(appState.npmPackages) { package in
-                    NpmPackageRowView(package: package)
-                }
-            }
-            .padding(.vertical, AppSpacing.sm)
-        }
-    }
+                    .textFieldStyle(.roundedBorder)
 
-    private var sectionHeader: some View {
-        HStack(spacing: AppSpacing.sm) {
-            Text("NPM 包")
-                .font(.appTitle2)
-                .foregroundStyle(Color.textPrimary)
-            
-            Spacer()
-            
-            if appState.npmPackages.isEmpty {
-                StatusBadge(type: .info, text: "暂无包", size: .small)
-            } else if packagesWithUpdates > 0 {
-                StatusBadge(type: .updateAvailable, text: "可更新 \(packagesWithUpdates)", size: .small)
+                Button {
+                    guard !installSpec.isEmpty else { return }
+                    isInstalling = true
+                    Task {
+                        await appState.installNpmPackage(spec: installSpec)
+                        installSpec = ""
+                        isInstalling = false
+                    }
+                } label: {
+                    if isInstalling {
+                        ProgressView().controlSize(.small)
+                    } else {
+                        Image(systemName: "plus.circle.fill")
+                    }
+                }
+                .disabled(installSpec.isEmpty || isInstalling)
+            }
+            .padding(.horizontal, 8)
+            .padding(.top, 8)
+
+            if appState.isCheckingNpm && appState.npmPackages.isEmpty {
+                Spacer()
+                ProgressView("正在加载...")
+                Spacer()
+            } else if appState.npmPackages.isEmpty {
+                ContentUnavailableView("暂无全局 NPM 包", systemImage: "shippingbox", description: Text("在上方输入包名进行安装"))
             } else {
-                StatusBadge(type: .installed, text: "已是最新", size: .small)
+                ScrollView {
+                    LazyVStack(spacing: 4) {
+                        ForEach(appState.npmPackages) { package in
+                            NpmPackageRowView(package: package)
+                        }
+                    }
+                    .padding(8)
+                }
             }
         }
     }
-
-    private var packagesWithUpdates: Int {
-        appState.npmPackages.filter { package in
-            if case .updateAvailable = package.state {
-                return true
-            }
-            return false
-        }.count
-    }
-}
-
-// MARK: - 预览
-
-#Preview {
-    NpmPackagesTabView()
-        .environment(AppState())
-        .frame(width: 380, height: 400)
 }

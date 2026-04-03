@@ -49,8 +49,8 @@ enum ClipboardCategory: String, CaseIterable, Codable, Identifiable {
         case .general: return .statusInfo
         case .code: return .brandPrimary
         case .command: return .statusSuccess
-        case .link: return .brandSecondary
-        case .other: return .textSecondary
+        case .link: return .teal
+        case .other: return .secondary
         }
     }
 }

@@ -1,180 +1,86 @@
-//
-//  NpmPackageRowView.swift
-//  CLIStatusApp
-//
-//  NPM 包行视图
-//  显示包名称、版本状态和操作按钮
-//
-
 import SwiftUI
 
 struct NpmPackageRowView: View {
     @Environment(AppState.self) private var appState
     @Bindable var package: NpmPackageStatus
-    
+
     var body: some View {
-        ListItemCard(statusType: cardStatusType) {
-            HStack(spacing: AppSpacing.md) {
-                // NPM 图标
-                npmIcon
-                
-                // 包信息
-                VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                    Text(package.name)
-                        .font(.itemTitle)
-                        .foregroundStyle(Color.textPrimary)
-                        .lineLimit(1)
-                    
-                    versionText
-                }
-                
-                Spacer()
-                
-                // 操作按钮
-                actionButtons
-            }
-        }
-        .padding(.horizontal, AppSpacing.sm)
-    }
-    
-    // MARK: - NPM 图标
-    
-    /// NPM 包图标
-    private var npmIcon: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: AppCornerRadius.xs)
-                .fill(.ultraThinMaterial)
-                .frame(width: 28, height: 28)
-                .overlay {
-                    RoundedRectangle(cornerRadius: AppCornerRadius.xs)
-                        .stroke(Color.npmRed.opacity(0.4), lineWidth: 1)
-                }
-            
+        HStack(spacing: 10) {
             Image(systemName: "shippingbox.fill")
-                .font(.system(size: AppSize.Icon.md, weight: .medium))
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(Color.npmRed)
+                .foregroundStyle(.red.opacity(0.7))
+                .frame(width: 24)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(package.name)
+                    .font(.system(size: 13, weight: .medium))
+                    .lineLimit(1)
+                versionText
+            }
+
+            Spacer()
+            actionButtons
         }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(RoundedRectangle(cornerRadius: 8).fill(.quaternary.opacity(0.5)))
     }
-    
-    // MARK: - 版本文本
-    
+
     @ViewBuilder
     private var versionText: some View {
         switch package.state {
         case .idle, .checking:
-            HStack(spacing: AppSpacing.xs) {
-                ProgressView()
-                    .controlSize(.mini)
-                Text("检查中...")
-                    .font(.appCaption2)
-                    .foregroundStyle(Color.textTertiary)
+            HStack(spacing: 4) {
+                ProgressView().controlSize(.mini)
+                Text("检查中...").font(.caption2).foregroundStyle(.tertiary)
             }
-            
         case .upToDate(let current):
-            Text("v\(current.display)")
-                .font(.version)
-                .foregroundStyle(Color.statusSuccess)
-            
+            Text("v\(current.display)").font(.system(size: 11, design: .monospaced)).foregroundStyle(.green)
         case .updateAvailable(let current, let latest):
-            HStack(spacing: AppSpacing.xs) {
-                Text("v\(current.display)")
-                    .font(.appCodeSmall)
-                    .foregroundStyle(Color.textSecondary)
-                
-                Image(systemName: "arrow.right")
-                    .font(.system(size: 8, weight: .bold))
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(Color.statusWarning)
-                
-                Text("v\(latest.display)")
-                    .font(.version)
-                    .foregroundStyle(Color.statusSuccess)
+            HStack(spacing: 4) {
+                Text("v\(current.display)").font(.system(size: 11, design: .monospaced)).foregroundStyle(.secondary)
+                Image(systemName: "arrow.right").font(.system(size: 8, weight: .bold)).foregroundStyle(.orange)
+                Text("v\(latest.display)").font(.system(size: 11, design: .monospaced)).foregroundStyle(.green)
             }
-            
         case .updating:
-            HStack(spacing: AppSpacing.xs) {
-                ProgressView()
-                    .controlSize(.mini)
-                Text("更新中...")
-                    .font(.appCaption2)
-                    .foregroundStyle(Color.textTertiary)
+            HStack(spacing: 4) {
+                ProgressView().controlSize(.mini)
+                Text("更新中...").font(.caption2).foregroundStyle(.tertiary)
             }
-            
         case .uninstalling:
-            HStack(spacing: AppSpacing.xs) {
-                ProgressView()
-                    .controlSize(.mini)
-                Text("卸载中...")
-                    .font(.appCaption2)
-                    .foregroundStyle(Color.textTertiary)
+            HStack(spacing: 4) {
+                ProgressView().controlSize(.mini)
+                Text("卸载中...").font(.caption2).foregroundStyle(.tertiary)
             }
-            
         case .error(let message):
-            Text(message)
-                .font(.appCaption2)
-                .foregroundStyle(Color.statusError)
-                .lineLimit(1)
+            Text(message).font(.caption2).foregroundStyle(.red).lineLimit(1)
         }
     }
-    
-    // MARK: - 操作按钮
-    
+
     @ViewBuilder
     private var actionButtons: some View {
         switch package.state {
         case .checking, .updating, .uninstalling:
-            ProgressView()
-                .controlSize(.mini)
-            
+            ProgressView().controlSize(.mini)
         case .updateAvailable:
-            HStack(spacing: AppSpacing.xs) {
-                ActionButton("更新", icon: "arrow.up", style: .primary, size: .small) {
-                    Task { await appState.upgradeNpmPackage(name: package.name) }
+            HStack(spacing: 4) {
+                Button("更新") { Task { await appState.upgradeNpmPackage(name: package.name) } }
+                    .controlSize(.mini)
+                Button(role: .destructive) { Task { await appState.uninstallNpmPackage(name: package.name) } } label: {
+                    Image(systemName: "trash")
                 }
-                
-                IconButton(icon: "trash", style: .destructive, size: .small) {
-                    Task { await appState.uninstallNpmPackage(name: package.name) }
-                }
+                .controlSize(.mini)
             }
-            
         case .upToDate:
-            IconButton(icon: "trash", style: .ghost, size: .small) {
-                Task { await appState.uninstallNpmPackage(name: package.name) }
+            Button(role: .destructive) { Task { await appState.uninstallNpmPackage(name: package.name) } } label: {
+                Image(systemName: "trash")
             }
-            
+            .controlSize(.mini)
+            .opacity(0.6)
         case .error:
-            ActionButton("重试", icon: "arrow.clockwise", style: .secondary, size: .small) {
-                Task { await appState.checkNpmPackages() }
-            }
-            
+            Button("重试") { Task { await appState.checkNpmPackages() } }
+                .controlSize(.mini)
         case .idle:
             EmptyView()
         }
     }
-    
-    // MARK: - 卡片状态类型
-    
-    /// 根据包状态返回卡片状态类型
-    private var cardStatusType: StatusType? {
-        switch package.state {
-        case .updateAvailable:
-            return .updateAvailable
-        case .error:
-            return .error
-        default:
-            return nil
-        }
-    }
-}
-
-// MARK: - 预览
-
-#Preview {
-    VStack(spacing: AppSpacing.sm) {
-        Text("NpmPackageRowView Preview")
-            .font(.appTitle)
-    }
-    .padding()
-    .frame(width: 380)
 }

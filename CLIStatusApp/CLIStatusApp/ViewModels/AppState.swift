@@ -6,12 +6,8 @@ import SwiftUI
 final class AppState {
     var tools: [ToolStatus]
     var npmPackages: [NpmPackageStatus] = []
-    var brewPackages: [BrewPackageStatus] = []
-    var npxPackages: [NpxPackageStatus] = []
     var isChecking = false
     var isCheckingNpm = false
-    var isCheckingBrew = false
-    var isCheckingNpx = false
     var autoCheckEnabled: Bool
     var checkIntervalMinutes: Int
     var lastCheckTime: Date?
@@ -31,12 +27,9 @@ final class AppState {
     private let versionChecker = VersionChecker()
     private let updateService = UpdateService()
     private let npmService = NpmPackageService()
-    private let brewService = BrewPackageService()
-    private let npxService = NpxPackageService()
     private var checkTimer: Timer?
     private let autoCheckKey = "autoCheckMarket"
     private let checkIntervalKey = "checkIntervalMinutes"
-    private let npxStorageKey = "npx_tracked_packages"
 
     init() {
         let defaults = UserDefaults.standard
@@ -46,15 +39,12 @@ final class AppState {
 
         self.tools = CLITool.allCases.map { ToolStatus(tool: $0) }
         self.checkInterval = TimeInterval(self.checkIntervalMinutes * 60)
-        loadNpxPackages()
 
         Task {
             await NotificationService.shared.requestAuthorization()
             if autoCheckEnabled {
                 await checkAll()
                 await checkNpmPackages()
-                await checkBrewPackages()
-                await checkNpxPackages()
                 startScheduledChecks()
             }
         }
@@ -195,191 +185,6 @@ final class AppState {
         isCheckingNpm = false
     }
 
-    // MARK: - NPX Packages
-
-    private struct NpxTrackedPackage: Codable {
-        let name: String
-        let currentVersion: String?
-    }
-
-    private func loadNpxPackages() {
-        guard let data = UserDefaults.standard.data(forKey: npxStorageKey),
-              let decoded = try? JSONDecoder().decode([NpxTrackedPackage].self, from: data) else {
-            npxPackages = []
-            return
-        }
-        npxPackages = decoded.map { NpxPackageStatus(name: $0.name, current: $0.currentVersion) }
-    }
-
-    private func saveNpxPackages() {
-        let items = npxPackages.map { NpxTrackedPackage(name: $0.name, currentVersion: $0.currentVersion) }
-        if let data = try? JSONEncoder().encode(items) {
-            UserDefaults.standard.set(data, forKey: npxStorageKey)
-        }
-    }
-
-    func checkNpxPackages() async {
-        guard !isCheckingNpx else { return }
-        isCheckingNpx = true
-
-        for pkg in npxPackages {
-            pkg.state = .checking
-        }
-
-        await withTaskGroup(of: (String, String?).self) { group in
-            for pkg in npxPackages {
-                group.addTask {
-                    let latest = await self.npxService.fetchLatestVersion(name: pkg.name)
-                    return (pkg.name, latest)
-                }
-            }
-
-            for await (name, latest) in group {
-                guard let pkg = npxPackages.first(where: { $0.name == name }) else { continue }
-                guard let latest = latest else {
-                    pkg.state = .error(message: "获取版本失败")
-                    continue
-                }
-
-                if let current = pkg.currentVersion, current != latest {
-                    pkg.state = .updateAvailable(current: current, latest: latest)
-                } else {
-                    pkg.currentVersion = latest
-                    pkg.state = .upToDate(current: latest)
-                }
-            }
-        }
-
-        saveNpxPackages()
-        isCheckingNpx = false
-    }
-
-    func addNpxPackage(name: String) async {
-        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-        if npxPackages.contains(where: { $0.name == trimmed }) { return }
-
-        let pkg = NpxPackageStatus(name: trimmed)
-        pkg.state = .checking
-        npxPackages.insert(pkg, at: 0)
-
-        let latest = await npxService.fetchLatestVersion(name: trimmed)
-        if let latest = latest {
-            pkg.currentVersion = latest
-            pkg.state = .upToDate(current: latest)
-        } else {
-            pkg.state = .error(message: "获取版本失败")
-        }
-
-        saveNpxPackages()
-    }
-
-    func applyNpxUpdate(name: String) {
-        guard let pkg = npxPackages.first(where: { $0.name == name }) else { return }
-        if case .updateAvailable(_, let latest) = pkg.state {
-            pkg.currentVersion = latest
-            pkg.state = .upToDate(current: latest)
-            saveNpxPackages()
-        }
-    }
-
-    func removeNpxPackage(name: String) {
-        npxPackages.removeAll { $0.name == name }
-        saveNpxPackages()
-    }
-
-    // MARK: - Homebrew Packages
-
-    func checkBrewPackages() async {
-        guard !isCheckingBrew else { return }
-        isCheckingBrew = true
-
-        do {
-            let packages = try await brewService.listInstalled()
-            brewPackages = packages.map { pkg in
-                BrewPackageStatus(name: pkg.name, current: pkg.version, kind: pkg.kind)
-            }
-
-            for pkg in brewPackages {
-                pkg.state = .checking
-            }
-
-            let outdated = await brewService.fetchOutdated()
-            for pkg in brewPackages {
-                guard let current = pkg.currentVersion else {
-                    pkg.state = .error(message: "Unknown version")
-                    continue
-                }
-                let latest: String?
-                switch pkg.kind {
-                case .formula:
-                    latest = outdated.formulae[pkg.name]
-                case .cask:
-                    latest = outdated.casks[pkg.name]
-                }
-
-                if let latest = latest, latest != current {
-                    pkg.state = .updateAvailable(current: current, latest: latest)
-                } else {
-                    pkg.state = .upToDate(current: current)
-                }
-            }
-        } catch {
-            for pkg in brewPackages {
-                pkg.state = .error(message: error.localizedDescription)
-            }
-        }
-
-        isCheckingBrew = false
-    }
-
-    func installBrewPackage(spec: String) async {
-        let (kind, name) = parseBrewSpec(spec)
-        let tempStatus = BrewPackageStatus(name: name, kind: kind)
-        tempStatus.state = .updating
-        brewPackages.insert(tempStatus, at: 0)
-
-        do {
-            try await brewService.install(spec: name, kind: kind)
-            await checkBrewPackages()
-        } catch {
-            tempStatus.state = .error(message: error.localizedDescription)
-        }
-    }
-
-    func upgradeBrewPackage(name: String) async {
-        guard let pkg = brewPackages.first(where: { $0.name == name }) else { return }
-        pkg.state = .updating
-
-        do {
-            try await brewService.upgrade(name: name, kind: pkg.kind)
-            await checkBrewPackages()
-        } catch {
-            pkg.state = .error(message: error.localizedDescription)
-        }
-    }
-
-    func uninstallBrewPackage(name: String) async {
-        guard let pkg = brewPackages.first(where: { $0.name == name }) else { return }
-        pkg.state = .uninstalling
-
-        do {
-            try await brewService.uninstall(name: name, kind: pkg.kind)
-            brewPackages.removeAll { $0.name == name }
-        } catch {
-            pkg.state = .error(message: error.localizedDescription)
-        }
-    }
-
-    private func parseBrewSpec(_ spec: String) -> (BrewPackageStatus.Kind, String) {
-        let trimmed = spec.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.lowercased().hasPrefix("cask:") {
-            let name = trimmed.dropFirst("cask:".count)
-            return (.cask, String(name))
-        }
-        return (.formula, trimmed)
-    }
-    
     func installNpmPackage(spec: String) async {
         let tempStatus = NpmPackageStatus(name: spec)
         tempStatus.state = .updating
@@ -433,8 +238,6 @@ final class AppState {
             Task { @MainActor in
                 await self?.checkAll()
                 await self?.checkNpmPackages()
-                await self?.checkBrewPackages()
-                await self?.checkNpxPackages()
             }
         }
     }
@@ -457,8 +260,6 @@ final class AppState {
             Task {
                 await checkAll()
                 await checkNpmPackages()
-                await checkBrewPackages()
-                await checkNpxPackages()
                 startScheduledChecks()
             }
         } else {
