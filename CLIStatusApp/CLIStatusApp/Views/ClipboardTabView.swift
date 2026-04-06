@@ -4,85 +4,63 @@ struct ClipboardTabView: View {
     @Environment(AppState.self) private var appState
     @State private var searchText = ""
     @State private var selectedCategory: ClipboardCategory?
-    @State private var showEditor = false
-    @State private var editorMode: ClipboardEditorMode = .create
-    @State private var editingItem: ClipboardItem?
 
     var body: some View {
-        ZStack {
-            VStack(spacing: 8) {
-                HStack(spacing: 8) {
-                    TextField("搜索剪贴板...", text: $searchText)
-                        .textFieldStyle(.roundedBorder)
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                TextField("搜索剪贴板...", text: $searchText)
+                    .textFieldStyle(.roundedBorder)
 
-                    Button {
-                        editorMode = .create
-                        editingItem = nil
-                        showEditor = true
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
+                Button {
+                    ClipboardEditorWindowManager.shared.openEditor(
+                        mode: .create,
+                        item: nil,
+                        appState: appState
+                    )
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.top, 8)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    categoryButton(nil, title: "全部")
+                    ForEach(ClipboardCategory.allCases) { cat in
+                        categoryButton(cat, title: cat.displayName)
                     }
                 }
                 .padding(.horizontal, 8)
-                .padding(.top, 8)
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 6) {
-                        categoryButton(nil, title: "全部")
-                        ForEach(ClipboardCategory.allCases) { cat in
-                            categoryButton(cat, title: cat.displayName)
-                        }
-                    }
-                    .padding(.horizontal, 8)
-                }
-
-                let items = filteredItems
-                if items.isEmpty {
-                    ContentUnavailableView(
-                        emptyStateTitle,
-                        systemImage: "doc.on.clipboard",
-                        description: Text(emptyStateMessage)
-                    )
-                } else {
-                    ScrollView {
-                        LazyVStack(spacing: 4) {
-                            ForEach(items) { item in
-                                ClipboardItemRow(
-                                    item: item,
-                                    onCopy: { appState.copyClipboardItem(item) },
-                                    onEdit: {
-                                        editorMode = .edit
-                                        editingItem = item
-                                        showEditor = true
-                                    },
-                                    onDelete: { appState.deleteClipboardItem(id: item.id) }
-                                )
-                            }
-                        }
-                        .padding(8)
-                    }
-                }
             }
 
-            if showEditor {
-                Color.black.opacity(0.16)
-                    .ignoresSafeArea()
-
-                ClipboardItemEditorView(
-                    mode: editorMode,
-                    item: editingItem,
-                    onSave: { item in
-                        if editorMode == .create {
-                            appState.addClipboardItem(item)
-                        } else {
-                            appState.updateClipboardItem(item)
-                        }
-                        showEditor = false
-                    },
-                    onCancel: { showEditor = false }
+            let items = filteredItems
+            if items.isEmpty {
+                ContentUnavailableView(
+                    emptyStateTitle,
+                    systemImage: "doc.on.clipboard",
+                    description: Text(emptyStateMessage)
                 )
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .shadow(radius: 12)
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 4) {
+                        ForEach(items) { item in
+                            ClipboardItemRow(
+                                item: item,
+                                onCopy: { appState.copyClipboardItem(item) },
+                                onEdit: {
+                                    ClipboardEditorWindowManager.shared.openEditor(
+                                        mode: .edit,
+                                        item: item,
+                                        appState: appState
+                                    )
+                                },
+                                onDelete: { appState.deleteClipboardItem(id: item.id) }
+                            )
+                        }
+                    }
+                    .padding(8)
+                }
             }
         }
     }
