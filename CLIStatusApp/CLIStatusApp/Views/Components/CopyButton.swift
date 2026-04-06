@@ -147,9 +147,11 @@ struct CopyButton: View {
         if let onCopy = onCopy {
             onCopy()
         } else {
-            let pasteboard = NSPasteboard.general
-            pasteboard.clearContents()
-            pasteboard.setString(content, forType: .string)
+            ClipboardFocusKeeper.performClipboardWrite {
+                let pasteboard = NSPasteboard.general
+                pasteboard.clearContents()
+                pasteboard.setString(content, forType: .string)
+            }
         }
         
         // 2 秒后恢复原状态
@@ -226,9 +228,11 @@ struct CopyButtonWithLabel: View {
         if let onCopy = onCopy {
             onCopy()
         } else {
-            let pasteboard = NSPasteboard.general
-            pasteboard.clearContents()
-            pasteboard.setString(content, forType: .string)
+            ClipboardFocusKeeper.performClipboardWrite {
+                let pasteboard = NSPasteboard.general
+                pasteboard.clearContents()
+                pasteboard.setString(content, forType: .string)
+            }
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
