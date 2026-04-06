@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build and package CLI Status App as .app bundle
+# Build and package cliadmin as .app bundle
 
 set -e
 cd "$(dirname "$0")"
@@ -8,7 +8,7 @@ echo "Building..."
 swift build -c release
 
 echo "Packaging..."
-APP_DIR=".build/CLIStatusApp.app"
+APP_DIR=".build/cliadmin.app"
 rm -rf "$APP_DIR"
 mkdir -p "$APP_DIR/Contents/MacOS"
 mkdir -p "$APP_DIR/Contents/Resources"
@@ -36,7 +36,9 @@ cat > "$APP_DIR/Contents/Info.plist" << 'EOF'
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>CLI Status</string>
+    <string>cliadmin</string>
+    <key>CFBundleDisplayName</key>
+    <string>cliadmin</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
