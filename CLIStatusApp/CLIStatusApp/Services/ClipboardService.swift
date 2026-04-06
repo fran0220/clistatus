@@ -172,9 +172,11 @@ final class ClipboardService {
     /// 复制内容到系统剪贴板
     /// - Parameter content: 要复制的内容
     func copyToClipboard(_ content: String) {
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.setString(content, forType: .string)
+        ClipboardFocusKeeper.performClipboardWrite {
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.setString(content, forType: .string)
+        }
     }
     
     /// 复制剪贴板项到系统剪贴板并增加使用次数

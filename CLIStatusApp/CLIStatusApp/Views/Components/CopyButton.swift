@@ -16,8 +16,10 @@ struct CopyButton: View {
             if let onCopy {
                 onCopy()
             } else {
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(content, forType: .string)
+                ClipboardFocusKeeper.performClipboardWrite {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(content, forType: .string)
+                }
             }
             isCopied = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) { isCopied = false }
