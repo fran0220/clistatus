@@ -67,7 +67,6 @@ struct ClipboardTabView: View {
             if showEditor {
                 Color.black.opacity(0.16)
                     .ignoresSafeArea()
-                    .onTapGesture { showEditor = false }
 
                 ClipboardItemEditorView(
                     mode: editorMode,
