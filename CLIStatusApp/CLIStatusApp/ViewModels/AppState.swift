@@ -6,8 +6,12 @@ import SwiftUI
 final class AppState {
     var tools: [ToolStatus]
     var npmPackages: [NpmPackageStatus] = []
+    var processSnapshot: SystemResourceSnapshot?
+    var processes: [ProcessStatus] = []
     var isChecking = false
     var isCheckingNpm = false
+    var isRefreshingProcesses = false
+    var processMonitorError: String?
     var autoCheckEnabled: Bool
     var checkIntervalMinutes: Int
     var lastCheckTime: Date?
@@ -27,6 +31,7 @@ final class AppState {
     private let versionChecker = VersionChecker()
     private let updateService = UpdateService()
     private let npmService = NpmPackageService()
+    private let processMonitorService = ProcessMonitorService()
     private var checkTimer: Timer?
     private let autoCheckKey = "autoCheckMarket"
     private let checkIntervalKey = "checkIntervalMinutes"
@@ -227,6 +232,37 @@ final class AppState {
             npmPackages.removeAll { $0.name == name }
         } catch {
             pkg.state = .error(message: error.localizedDescription)
+        }
+    }
+
+    // MARK: - Process Monitor
+
+    func refreshProcesses() async {
+        guard !isRefreshingProcesses else { return }
+        isRefreshingProcesses = true
+        processMonitorError = nil
+
+        do {
+            let snapshot = try await processMonitorService.snapshot()
+            processSnapshot = snapshot.resources
+            processes = snapshot.processes
+        } catch {
+            processMonitorError = error.localizedDescription
+        }
+
+        isRefreshingProcesses = false
+    }
+
+    func stopProcess(pid: Int32) async {
+        processMonitorError = nil
+
+        do {
+            try await processMonitorService.terminate(pid: pid)
+            try? await Task.sleep(for: .milliseconds(500))
+            await refreshProcesses()
+        } catch {
+            processMonitorError = error.localizedDescription
+            await refreshProcesses()
         }
     }
 

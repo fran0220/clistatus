@@ -35,6 +35,8 @@ struct MenuBarView: View {
             NpmPackagesTabView()
         case .clipboard:
             ClipboardTabView()
+        case .performance:
+            PerformanceTabView()
         }
     }
 }
@@ -43,6 +45,7 @@ private enum MainTab: Int, CaseIterable, Identifiable {
     case cli
     case npm
     case clipboard
+    case performance
 
     var id: Int { rawValue }
 
@@ -51,6 +54,7 @@ private enum MainTab: Int, CaseIterable, Identifiable {
         case .cli: return "CLI 工具"
         case .npm: return "NPM 包"
         case .clipboard: return "剪贴板"
+        case .performance: return "性能"
         }
     }
 }
