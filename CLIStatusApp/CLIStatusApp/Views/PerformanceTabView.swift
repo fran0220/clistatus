@@ -2,88 +2,120 @@ import SwiftUI
 
 struct PerformanceTabView: View {
     @Environment(AppState.self) private var appState
-    @State private var sortMode: ProcessSortMode = .cpu
+    @State private var sortMode: ProcessSortMode = .memory
     @State private var processToTerminate: ProcessStatus?
 
-    private var sortedProcesses: [ProcessStatus] {
+    private var rankedGroups: [ProcessGroup] {
+        appState.sortedProcessGroups(by: sortMode)
+    }
+
+    private var maxMetric: Double {
         switch sortMode {
-        case .cpu:
-            appState.processes.sorted { $0.cpuPercent > $1.cpuPercent }
         case .memory:
-            appState.processes.sorted { $0.residentMemoryMB > $1.residentMemoryMB }
+            return max(rankedGroups.map(\.totalMemoryMB).max() ?? 1, 1)
+        case .cpu:
+            return max(rankedGroups.map(\.totalCPU).max() ?? 1, 1)
         }
     }
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppSpacing.sm) {
             summarySection
-                .padding(.horizontal, 8)
-                .padding(.top, 8)
+                .padding(.horizontal, AppSpacing.sm)
+                .padding(.top, AppSpacing.sm)
 
             controls
-                .padding(.horizontal, 8)
+                .padding(.horizontal, AppSpacing.sm)
 
             if let error = appState.processMonitorError {
                 Text(error)
                     .font(.caption2)
-                    .foregroundStyle(.red)
+                    .foregroundStyle(Color.statusError)
                     .lineLimit(2)
-                    .padding(.horizontal, 8)
+                    .padding(.horizontal, AppSpacing.sm)
             }
 
             if let processToTerminate {
                 terminationConfirmView(for: processToTerminate)
-                    .padding(.horizontal, 8)
+                    .padding(.horizontal, AppSpacing.sm)
             }
 
-            if appState.isRefreshingProcesses && appState.processes.isEmpty {
+            if appState.isRefreshingProcesses && rankedGroups.isEmpty {
                 Spacer()
                 ProgressView("正在加载进程...")
                 Spacer()
-            } else if appState.processes.isEmpty {
-                ContentUnavailableView("暂无进程数据", systemImage: "cpu", description: Text("点击刷新重新读取系统状态"))
+            } else if rankedGroups.isEmpty {
+                ContentUnavailableView(
+                    "暂无进程数据",
+                    systemImage: "cpu",
+                    description: Text("点击刷新重新读取系统状态")
+                )
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 4) {
-                        ForEach(sortedProcesses) { process in
-                            ProcessRowView(process: process) {
+                    LazyVStack(spacing: AppSpacing.xs) {
+                        ForEach(Array(rankedGroups.enumerated()), id: \.element.id) { index, group in
+                            ProcessGroupRowView(
+                                group: group,
+                                rank: index + 1,
+                                relativeShare: relativeShare(for: group),
+                                sortMode: sortMode
+                            ) { process in
                                 processToTerminate = process
                             }
                         }
                     }
-                    .padding(8)
+                    .padding(AppSpacing.sm)
                 }
             }
         }
         .task {
-            if appState.processes.isEmpty {
-                await appState.refreshProcesses()
-            }
+            await appState.refreshProcesses()
+            appState.startProcessAutoRefreshIfNeeded()
+        }
+        .onDisappear {
+            appState.stopProcessAutoRefresh()
+        }
+    }
+
+    private func relativeShare(for group: ProcessGroup) -> Double {
+        switch sortMode {
+        case .memory:
+            return group.totalMemoryMB / maxMetric
+        case .cpu:
+            return group.totalCPU / maxMetric
         }
     }
 
     private var summarySection: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: AppSpacing.sm) {
             ResourceCardView(
                 title: "CPU",
-                value: appState.processSnapshot.map { "\($0.cpuUsagePercent.formatted(.number.precision(.fractionLength(0))))%" } ?? "--",
+                value: appState.processSnapshot.map {
+                    "\($0.cpuUsagePercent.formatted(.number.precision(.fractionLength(0))))%"
+                } ?? "--",
                 subtitle: "总占用",
                 systemImage: "cpu",
-                color: .blue
+                color: .metricCPU,
+                progress: appState.processSnapshot?.cpuUsagePercent
             )
 
             ResourceCardView(
                 title: "内存",
-                value: appState.processSnapshot.map { "\($0.memoryUsagePercent.formatted(.number.precision(.fractionLength(0))))%" } ?? "--",
-                subtitle: appState.processSnapshot.map { "\($0.memoryUsedGB.formatted(.number.precision(.fractionLength(1)))) / \($0.memoryTotalGB.formatted(.number.precision(.fractionLength(1)))) GB" } ?? "--",
+                value: appState.processSnapshot.map {
+                    "\($0.memoryUsagePercent.formatted(.number.precision(.fractionLength(0))))%"
+                } ?? "--",
+                subtitle: appState.processSnapshot.map {
+                    "\($0.memoryUsedGB.formatted(.number.precision(.fractionLength(1)))) / \($0.memoryTotalGB.formatted(.number.precision(.fractionLength(1)))) GB"
+                } ?? "--",
                 systemImage: "memorychip",
-                color: .purple
+                color: .metricMemory,
+                progress: appState.processSnapshot?.memoryUsagePercent
             )
         }
     }
 
     private var controls: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: AppSpacing.sm) {
             Picker("排序", selection: $sortMode) {
                 ForEach(ProcessSortMode.allCases) { mode in
                     Text(mode.title).tag(mode)
@@ -102,25 +134,26 @@ struct PerformanceTabView: View {
             }
             .disabled(appState.isRefreshingProcesses)
             .help("刷新")
+            .accessibilityLabel("刷新进程")
         }
     }
 
     private func terminationConfirmView(for process: ProcessStatus) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top, spacing: 8) {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            HStack(alignment: .top, spacing: AppSpacing.sm) {
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(Color.statusWarning)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("停止 \(process.name)？")
+                    Text("停止 \(process.displayName)？")
                         .font(.system(size: 12, weight: .semibold))
                     Text("PID \(process.pid)。未保存的数据可能丢失。")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
-                Spacer()
+                Spacer(minLength: 0)
             }
 
-            HStack(spacing: 8) {
+            HStack(spacing: AppSpacing.sm) {
                 Spacer()
                 Button("取消") {
                     processToTerminate = nil
@@ -135,57 +168,14 @@ struct PerformanceTabView: View {
                 .controlSize(.small)
             }
         }
-        .padding(10)
-        .background(RoundedRectangle(cornerRadius: 10).fill(.orange.opacity(0.12)))
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(.orange.opacity(0.35), lineWidth: 1)
+        .padding(AppSpacing.sm + 2)
+        .background(
+            RoundedRectangle(cornerRadius: AppCornerRadius.lg - 2)
+                .fill(Color.statusWarning.opacity(0.12))
         )
-    }
-}
-
-private enum ProcessSortMode: Int, CaseIterable, Identifiable {
-    case cpu
-    case memory
-
-    var id: Int { rawValue }
-
-    var title: String {
-        switch self {
-        case .cpu: return "CPU"
-        case .memory: return "内存"
-        }
-    }
-}
-
-private struct ResourceCardView: View {
-    let title: String
-    let value: String
-    let subtitle: String
-    let systemImage: String
-    let color: Color
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 5) {
-                Image(systemName: systemImage)
-                    .foregroundStyle(color)
-                Text(title)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Spacer()
-            }
-
-            Text(value)
-                .font(.system(size: 22, weight: .semibold, design: .rounded))
-
-            Text(subtitle)
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
-                .lineLimit(1)
-        }
-        .padding(10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 10).fill(.quaternary.opacity(0.45)))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppCornerRadius.lg - 2)
+                .stroke(Color.statusWarning.opacity(0.35), lineWidth: 1)
+        )
     }
 }

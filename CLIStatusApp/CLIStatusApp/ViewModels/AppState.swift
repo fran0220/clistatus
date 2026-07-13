@@ -8,12 +8,14 @@ final class AppState {
     var npmPackages: [NpmPackageStatus] = []
     var processSnapshot: SystemResourceSnapshot?
     var processes: [ProcessStatus] = []
+    var processGroups: [ProcessGroup] = []
     var isChecking = false
     var isCheckingNpm = false
     var isRefreshingProcesses = false
     var processMonitorError: String?
     var autoCheckEnabled: Bool
     var checkIntervalMinutes: Int
+    var processAutoRefreshEnabled: Bool
     var lastCheckTime: Date?
     var checkInterval: TimeInterval = 3600 {
         didSet {
@@ -22,9 +24,9 @@ final class AppState {
             }
         }
     }
-    
+
     // MARK: - 剪贴板服务
-    
+
     /// 剪贴板服务实例
     let clipboardService = ClipboardService()
 
@@ -33,14 +35,18 @@ final class AppState {
     private let npmService = NpmPackageService()
     private let processMonitorService = ProcessMonitorService()
     private var checkTimer: Timer?
+    private var processRefreshTask: Task<Void, Never>?
     private let autoCheckKey = "autoCheckMarket"
     private let checkIntervalKey = "checkIntervalMinutes"
+    private let processAutoRefreshKey = "processAutoRefreshEnabled"
+    private let processRefreshInterval: Duration = .seconds(4)
 
     init() {
         let defaults = UserDefaults.standard
         let storedInterval = defaults.integer(forKey: checkIntervalKey)
         self.checkIntervalMinutes = storedInterval == 0 ? 60 : storedInterval
         self.autoCheckEnabled = defaults.object(forKey: autoCheckKey) as? Bool ?? true
+        self.processAutoRefreshEnabled = defaults.object(forKey: processAutoRefreshKey) as? Bool ?? true
 
         self.tools = CLITool.allCases.map { ToolStatus(tool: $0) }
         self.checkInterval = TimeInterval(self.checkIntervalMinutes * 60)
@@ -246,11 +252,16 @@ final class AppState {
             let snapshot = try await processMonitorService.snapshot()
             processSnapshot = snapshot.resources
             processes = snapshot.processes
+            processGroups = snapshot.groups
         } catch {
             processMonitorError = error.localizedDescription
         }
 
         isRefreshingProcesses = false
+    }
+
+    func sortedProcessGroups(by mode: ProcessSortMode) -> [ProcessGroup] {
+        ProcessGrouping.sortedGroups(processGroups, by: mode)
     }
 
     func stopProcess(pid: Int32) async {
@@ -263,6 +274,33 @@ final class AppState {
         } catch {
             processMonitorError = error.localizedDescription
             await refreshProcesses()
+        }
+    }
+
+    func startProcessAutoRefreshIfNeeded() {
+        guard processAutoRefreshEnabled else { return }
+        guard processRefreshTask == nil else { return }
+
+        processRefreshTask = Task { [weak self] in
+            while !Task.isCancelled {
+                await self?.refreshProcesses()
+                try? await Task.sleep(for: self?.processRefreshInterval ?? .seconds(4))
+            }
+        }
+    }
+
+    func stopProcessAutoRefresh() {
+        processRefreshTask?.cancel()
+        processRefreshTask = nil
+    }
+
+    func updateProcessAutoRefreshEnabled(_ enabled: Bool) {
+        processAutoRefreshEnabled = enabled
+        UserDefaults.standard.set(enabled, forKey: processAutoRefreshKey)
+        if enabled {
+            startProcessAutoRefreshIfNeeded()
+        } else {
+            stopProcessAutoRefresh()
         }
     }
 

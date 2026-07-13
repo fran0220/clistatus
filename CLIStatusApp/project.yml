@@ -1,0 +1,66 @@
+name: CLIStatusApp
+options:
+  bundleIdPrefix: com.fan
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_IDENTITY: "-"
+    ENABLE_HARDENED_RUNTIME: YES
+
+targets:
+  CLIStatusApp:
+    type: application
+    platform: macOS
+    sources:
+      - path: CLIStatusApp
+        excludes:
+          - Info.plist
+    resources:
+      - path: CLIStatusApp/Resources
+    settings:
+      base:
+        PRODUCT_NAME: CLIStatusApp
+        PRODUCT_BUNDLE_IDENTIFIER: com.fan.CLIStatusApp
+        INFOPLIST_FILE: CLIStatusApp/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        COMBINE_HIDPI_IMAGES: YES
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/../Frameworks"
+        CREATE_INFOPLIST_SECTION_IN_BINARY: NO
+    dependencies:
+      - target: CLIStatusFinderSync
+        embed: true
+        codeSign: true
+    scheme:
+      testTargets: []
+
+  CLIStatusFinderSync:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: FinderSync
+        excludes:
+          - Info.plist
+          - "*.entitlements"
+      - path: CLIStatusApp/Services/FileContextService.swift
+    settings:
+      base:
+        PRODUCT_NAME: CLIStatusFinderSync
+        PRODUCT_BUNDLE_IDENTIFIER: com.fan.CLIStatusApp.FinderSync
+        INFOPLIST_FILE: FinderSync/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_ENTITLEMENTS: FinderSync/CLIStatusFinderSync.entitlements
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/../Frameworks"
+          - "@executable_path/../../../../Frameworks"
+        SKIP_INSTALL: YES

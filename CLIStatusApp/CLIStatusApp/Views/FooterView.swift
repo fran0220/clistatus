@@ -4,7 +4,7 @@ struct FooterView: View {
     @Environment(AppState.self) private var appState
 
     var body: some View {
-        HStack {
+        HStack(spacing: AppSpacing.sm) {
             if let lastCheck = appState.lastCheckTime {
                 Label("上次: \(lastCheck, style: .relative)", systemImage: "clock")
                     .font(.caption2)
@@ -15,7 +15,7 @@ struct FooterView: View {
                     .foregroundStyle(.tertiary)
             }
 
-            Spacer()
+            Spacer(minLength: 0)
 
             SettingsLink {
                 Label("设置", systemImage: "gear")
@@ -29,8 +29,9 @@ struct FooterView: View {
                 Label("退出", systemImage: "power")
                     .font(.caption)
             }
+            .accessibilityLabel("退出应用")
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
+        .padding(.horizontal, AppSpacing.md)
+        .padding(.vertical, AppSpacing.xs + 2)
     }
 }

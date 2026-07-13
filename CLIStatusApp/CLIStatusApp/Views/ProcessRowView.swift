@@ -2,33 +2,40 @@ import SwiftUI
 
 struct ProcessRowView: View {
     let process: ProcessStatus
+    var compact: Bool = false
     let onTerminate: () -> Void
 
     var body: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "app.dashed")
-                .foregroundStyle(.blue.opacity(0.75))
-                .frame(width: 24)
+        HStack(spacing: AppSpacing.sm) {
+            if !compact {
+                Image(systemName: "app.dashed")
+                    .foregroundStyle(Color.metricCPU.opacity(0.75))
+                    .frame(width: 24)
+            }
 
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
-                    Text(process.name)
-                        .font(.system(size: 13, weight: .medium))
+                    Text(compact ? process.name : process.displayName)
+                        .font(compact ? .caption : .appRowTitle)
                         .lineLimit(1)
 
                     Text("PID \(process.pid)")
                         .font(.system(size: 10, design: .monospaced))
                         .foregroundStyle(.tertiary)
+                        .monospacedDigit()
                 }
 
-                Text(process.command)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-
-                HStack(spacing: 8) {
-                    MetricPill(title: "CPU", value: "\(process.cpuPercent.formatted(.number.precision(.fractionLength(1))))%", color: .blue)
-                    MetricPill(title: "内存", value: "\(process.residentMemoryMB.formatted(.number.precision(.fractionLength(process.residentMemoryMB >= 100 ? 0 : 1)))) MB", color: .purple)
+                HStack(spacing: AppSpacing.sm) {
+                    MetricPill(
+                        title: "CPU",
+                        value: "\(process.cpuPercent.formatted(.number.precision(.fractionLength(1))))%",
+                        color: .metricCPU
+                    )
+                    MetricPill(
+                        title: "内存",
+                        value: memoryLabel(process.residentMemoryMB),
+                        color: .metricMemory
+                    )
                 }
             }
 
@@ -43,25 +50,20 @@ struct ProcessRowView: View {
             .disabled(!process.canTerminate)
             .opacity(process.canTerminate ? 0.75 : 0.25)
             .help(process.canTerminate ? "停止进程" : "不能停止该进程")
+            .accessibilityLabel("停止进程")
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 7)
-        .background(RoundedRectangle(cornerRadius: 8).fill(.quaternary.opacity(0.5)))
+        .padding(.horizontal, compact ? AppSpacing.sm : AppSpacing.sm + 2)
+        .padding(.vertical, compact ? AppSpacing.xs + 1 : AppSpacing.sm - 1)
+        .background(
+            RoundedRectangle(cornerRadius: AppCornerRadius.sm)
+                .fill(compact ? Color.primary.opacity(0.04) : Color.surfaceRow)
+        )
     }
-}
 
-private struct MetricPill: View {
-    let title: String
-    let value: String
-    let color: Color
-
-    var body: some View {
-        HStack(spacing: 3) {
-            Text(title)
-                .foregroundStyle(.tertiary)
-            Text(value)
-                .foregroundStyle(color)
+    private func memoryLabel(_ mb: Double) -> String {
+        if mb >= 1024 {
+            return "\((mb / 1024).formatted(.number.precision(.fractionLength(1)))) GB"
         }
-        .font(.system(size: 10, weight: .medium, design: .rounded))
+        return "\(mb.formatted(.number.precision(.fractionLength(mb >= 100 ? 0 : 1)))) MB"
     }
 }

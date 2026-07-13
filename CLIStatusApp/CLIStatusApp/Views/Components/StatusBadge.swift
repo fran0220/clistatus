@@ -5,11 +5,11 @@ enum StatusType: Equatable {
 
     var color: Color {
         switch self {
-        case .success, .installed: return .green
-        case .warning, .updateAvailable: return .orange
-        case .error, .notInstalled: return .red
-        case .loading: return .gray
-        case .info: return .blue
+        case .success, .installed: return .statusSuccess
+        case .warning, .updateAvailable: return .statusWarning
+        case .error, .notInstalled: return .statusError
+        case .loading: return .secondary
+        case .info: return .statusInfo
         }
     }
 }
@@ -26,7 +26,11 @@ struct StatusBadge: View {
     var body: some View {
         Text(text ?? defaultText)
             .font(.caption2)
+            .fontWeight(.medium)
             .foregroundStyle(type.color)
+            .padding(.horizontal, 5)
+            .padding(.vertical, 1)
+            .background(Capsule().fill(type.color.opacity(0.12)))
     }
 
     private var defaultText: String {

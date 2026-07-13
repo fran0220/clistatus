@@ -6,8 +6,8 @@ struct NpmPackagesTabView: View {
     @State private var isInstalling = false
 
     var body: some View {
-        VStack(spacing: 8) {
-            HStack(spacing: 8) {
+        VStack(spacing: AppSpacing.sm) {
+            HStack(spacing: AppSpacing.sm) {
                 TextField("包名称（如 lodash@latest）", text: $installSpec)
                     .textFieldStyle(.roundedBorder)
 
@@ -27,24 +27,29 @@ struct NpmPackagesTabView: View {
                     }
                 }
                 .disabled(installSpec.isEmpty || isInstalling)
+                .accessibilityLabel("安装 NPM 包")
             }
-            .padding(.horizontal, 8)
-            .padding(.top, 8)
+            .padding(.horizontal, AppSpacing.sm)
+            .padding(.top, AppSpacing.sm)
 
             if appState.isCheckingNpm && appState.npmPackages.isEmpty {
                 Spacer()
                 ProgressView("正在加载...")
                 Spacer()
             } else if appState.npmPackages.isEmpty {
-                ContentUnavailableView("暂无全局 NPM 包", systemImage: "shippingbox", description: Text("在上方输入包名进行安装"))
+                ContentUnavailableView(
+                    "暂无全局 NPM 包",
+                    systemImage: "shippingbox",
+                    description: Text("在上方输入包名进行安装")
+                )
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 4) {
+                    LazyVStack(spacing: AppSpacing.xs) {
                         ForEach(appState.npmPackages) { package in
                             NpmPackageRowView(package: package)
                         }
                     }
-                    .padding(8)
+                    .padding(AppSpacing.sm)
                 }
             }
         }

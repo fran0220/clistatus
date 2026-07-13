@@ -5,19 +5,18 @@ struct ToolRowView: View {
     @Bindable var toolStatus: ToolStatus
 
     var body: some View {
-        HStack(spacing: 10) {
-            toolIcon
-            VStack(alignment: .leading, spacing: 2) {
-                Text(toolStatus.tool.displayName)
-                    .font(.system(size: 13, weight: .medium))
-                versionText
+        SurfaceRow {
+            HStack(spacing: AppSpacing.sm) {
+                toolIcon
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(toolStatus.tool.displayName)
+                        .font(.appRowTitle)
+                    versionText
+                }
+                Spacer(minLength: 0)
+                actionContent
             }
-            Spacer()
-            actionContent
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .background(RoundedRectangle(cornerRadius: 8).fill(.quaternary.opacity(0.5)))
     }
 
     private var toolIcon: some View {
@@ -40,32 +39,50 @@ struct ToolRowView: View {
     private var versionText: some View {
         switch toolStatus.state {
         case .idle, .checking:
-            HStack(spacing: 4) {
+            HStack(spacing: AppSpacing.xs) {
                 ProgressView().controlSize(.mini)
-                Text("检查中...").font(.caption).foregroundStyle(.tertiary)
+                StatusBadge(type: .loading)
             }
         case .notInstalled:
-            Text("未安装").font(.caption).foregroundStyle(.red)
+            StatusBadge(type: .notInstalled)
         case .upToDate(let current):
-            Text("v\(current.display)").font(.system(size: 11, design: .monospaced)).foregroundStyle(.green)
+            HStack(spacing: AppSpacing.xs) {
+                Text("v\(current.display)")
+                    .font(.appCode)
+                    .foregroundStyle(Color.statusSuccess)
+                    .monospacedDigit()
+                StatusBadge(type: .installed, text: "最新")
+            }
         case .updateAvailable(let current, let latest):
-            HStack(spacing: 4) {
-                Text("v\(current.display)").font(.system(size: 11, design: .monospaced)).foregroundStyle(.secondary)
-                Image(systemName: "arrow.right").font(.system(size: 8, weight: .bold)).foregroundStyle(.orange)
-                Text("v\(latest.display)").font(.system(size: 11, design: .monospaced)).foregroundStyle(.green)
+            HStack(spacing: AppSpacing.xs) {
+                Text("v\(current.display)")
+                    .font(.appCode)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundStyle(Color.statusWarning)
+                Text("v\(latest.display)")
+                    .font(.appCode)
+                    .foregroundStyle(Color.statusSuccess)
+                    .monospacedDigit()
+                StatusBadge(type: .updateAvailable)
             }
         case .updating:
-            HStack(spacing: 4) {
+            HStack(spacing: AppSpacing.xs) {
                 ProgressView().controlSize(.mini)
                 Text("更新中...").font(.caption).foregroundStyle(.tertiary)
             }
         case .installing:
-            HStack(spacing: 4) {
+            HStack(spacing: AppSpacing.xs) {
                 ProgressView().controlSize(.mini)
                 Text("安装中...").font(.caption).foregroundStyle(.tertiary)
             }
         case .error(let message):
-            Text(message).font(.caption).foregroundStyle(.red).lineLimit(1)
+            Text(message)
+                .font(.caption)
+                .foregroundStyle(Color.statusError)
+                .lineLimit(1)
         }
     }
 
@@ -83,7 +100,7 @@ struct ToolRowView: View {
                 .tint(.accentColor)
         case .upToDate:
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
+                .foregroundStyle(Color.statusSuccess)
                 .font(.system(size: 14))
         case .error:
             Button("重试") { Task { await appState.checkAll() } }

@@ -1,3 +1,4 @@
+import AppKit
 import Darwin
 import Foundation
 
@@ -16,12 +17,20 @@ actor ProcessMonitorService {
         }
     }
 
+    struct AppIdentity: Sendable, Equatable {
+        let bundleIdentifier: String?
+        let displayName: String?
+        let bundleURL: URL?
+    }
+
     private let shell = ShellExecutor()
 
     func snapshot() async throws -> ProcessMonitorSnapshot {
-        let processes = try await loadProcesses()
+        let identities = await loadRunningAppIdentities()
+        let processes = try await loadProcesses(identities: identities)
         let resources = try await loadResourceSnapshot(processes: processes)
-        return ProcessMonitorSnapshot(resources: resources, processes: processes)
+        let groups = ProcessGrouping.groupProcesses(processes, totalMemoryGB: resources.memoryTotalGB)
+        return ProcessMonitorSnapshot(resources: resources, processes: processes, groups: groups)
     }
 
     func terminate(pid: Int32) throws {
@@ -34,7 +43,23 @@ actor ProcessMonitorService {
         }
     }
 
-    private func loadProcesses() async throws -> [ProcessStatus] {
+    private func loadRunningAppIdentities() async -> [Int32: AppIdentity] {
+        await MainActor.run {
+            var map: [Int32: AppIdentity] = [:]
+            for app in NSWorkspace.shared.runningApplications {
+                let pid = app.processIdentifier
+                guard pid > 0 else { continue }
+                map[pid] = AppIdentity(
+                    bundleIdentifier: app.bundleIdentifier,
+                    displayName: app.localizedName,
+                    bundleURL: app.bundleURL
+                )
+            }
+            return map
+        }
+    }
+
+    private func loadProcesses(identities: [Int32: AppIdentity]) async throws -> [ProcessStatus] {
         let output = try await shell.run([
             "/bin/ps",
             "-axo",
@@ -44,10 +69,13 @@ actor ProcessMonitorService {
 
         return output
             .split(separator: "\n")
-            .compactMap { parseProcessLine(String($0)) }
+            .compactMap { Self.parseProcessLine(String($0), identities: identities) }
     }
 
-    private func parseProcessLine(_ line: String) -> ProcessStatus? {
+    nonisolated static func parseProcessLine(
+        _ line: String,
+        identities: [Int32: AppIdentity] = [:]
+    ) -> ProcessStatus? {
         let parts = line.split(maxSplits: 5, whereSeparator: { $0.isWhitespace }).map(String.init)
         guard parts.count == 6,
               let pid = Int32(parts[0]),
@@ -59,15 +87,29 @@ actor ProcessMonitorService {
         }
 
         let name = parts[5].trimmingCharacters(in: .whitespacesAndNewlines)
+        let fallbackName = name.isEmpty ? "PID \(pid)" : name
+        let identity = identities[pid]
+        let bundleIdentifier = identity?.bundleIdentifier
+        let displayName = identity?.displayName?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let resolvedDisplayName = (displayName?.isEmpty == false) ? displayName! : fallbackName
+        let groupingKey = ProcessGrouping.groupingKey(
+            bundleIdentifier: bundleIdentifier,
+            name: fallbackName,
+            bundleURL: identity?.bundleURL
+        )
 
         return ProcessStatus(
             pid: pid,
             parentPid: parentPid,
-            name: name.isEmpty ? "PID \(pid)" : name,
-            command: name.isEmpty ? "PID \(pid)" : name,
+            name: fallbackName,
+            command: fallbackName,
             cpuPercent: cpuPercent,
             memoryPercent: memoryPercent,
-            residentMemoryMB: rssKB / 1024.0
+            residentMemoryMB: rssKB / 1024.0,
+            bundleIdentifier: bundleIdentifier,
+            displayName: resolvedDisplayName,
+            groupingKey: groupingKey,
+            bundleURL: identity?.bundleURL
         )
     }
 

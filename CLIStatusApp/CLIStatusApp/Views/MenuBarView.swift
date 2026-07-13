@@ -5,7 +5,7 @@ struct MenuBarView: View {
     @State private var selectedTab: MainTab = .cli
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: AppSpacing.sm) {
             HeaderView()
 
             Picker("", selection: $selectedTab) {
@@ -14,14 +14,14 @@ struct MenuBarView: View {
                 }
             }
             .pickerStyle(.segmented)
-            .padding(.horizontal, 8)
+            .padding(.horizontal, AppSpacing.sm)
 
             tabContent
                 .frame(height: 480)
 
             FooterView()
         }
-        .padding(8)
+        .padding(AppSpacing.sm)
         .frame(width: 360)
         .background(.ultraThinMaterial)
     }

@@ -4,16 +4,16 @@ struct HeaderView: View {
     @Environment(AppState.self) private var appState
 
     var body: some View {
-        HStack {
+        HStack(spacing: AppSpacing.sm) {
             Image(systemName: "terminal.fill")
                 .foregroundStyle(.secondary)
             Text("CLI Status")
                 .font(.headline)
-            Spacer()
+            Spacer(minLength: 0)
             Button {
                 Task { await appState.checkAll() }
             } label: {
-                HStack(spacing: 4) {
+                HStack(spacing: AppSpacing.xs) {
                     if appState.isChecking {
                         ProgressView()
                             .controlSize(.small)
@@ -25,8 +25,9 @@ struct HeaderView: View {
                 }
             }
             .disabled(appState.isChecking)
+            .accessibilityLabel(appState.isChecking ? "正在检查" : "刷新全部")
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
+        .padding(.horizontal, AppSpacing.md)
+        .padding(.vertical, AppSpacing.sm)
     }
 }

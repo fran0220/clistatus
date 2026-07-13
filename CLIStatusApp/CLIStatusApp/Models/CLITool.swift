@@ -51,7 +51,7 @@ enum CLITool: String, CaseIterable, Identifiable {
         let names = ["ToolIcons/\(iconAssetName)", iconAssetName]
         for ext in extensions {
             for name in names {
-                if let url = Bundle.module.url(forResource: name, withExtension: ext),
+                if let url = AppResourceBundle.current.url(forResource: name, withExtension: ext),
                    let nsImage = NSImage(contentsOf: url) {
                     return Image(nsImage: nsImage)
                 }

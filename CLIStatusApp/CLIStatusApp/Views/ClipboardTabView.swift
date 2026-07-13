@@ -6,8 +6,8 @@ struct ClipboardTabView: View {
     @State private var selectedCategory: ClipboardCategory?
 
     var body: some View {
-        VStack(spacing: 8) {
-            HStack(spacing: 8) {
+        VStack(spacing: AppSpacing.sm) {
+            HStack(spacing: AppSpacing.sm) {
                 TextField("搜索剪贴板...", text: $searchText)
                     .textFieldStyle(.roundedBorder)
 
@@ -20,18 +20,19 @@ struct ClipboardTabView: View {
                 } label: {
                     Image(systemName: "plus.circle.fill")
                 }
+                .accessibilityLabel("新建剪贴板项")
             }
-            .padding(.horizontal, 8)
-            .padding(.top, 8)
+            .padding(.horizontal, AppSpacing.sm)
+            .padding(.top, AppSpacing.sm)
 
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
+                HStack(spacing: AppSpacing.xs + 2) {
                     categoryButton(nil, title: "全部")
                     ForEach(ClipboardCategory.allCases) { cat in
                         categoryButton(cat, title: cat.displayName)
                     }
                 }
-                .padding(.horizontal, 8)
+                .padding(.horizontal, AppSpacing.sm)
             }
 
             let items = filteredItems
@@ -43,7 +44,7 @@ struct ClipboardTabView: View {
                 )
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 4) {
+                    LazyVStack(spacing: AppSpacing.xs) {
                         ForEach(items) { item in
                             ClipboardItemRow(
                                 item: item,
@@ -59,7 +60,7 @@ struct ClipboardTabView: View {
                             )
                         }
                     }
-                    .padding(8)
+                    .padding(AppSpacing.sm)
                 }
             }
         }
@@ -72,8 +73,8 @@ struct ClipboardTabView: View {
         } label: {
             Text(title)
                 .font(.caption)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
+                .padding(.horizontal, AppSpacing.sm)
+                .padding(.vertical, AppSpacing.xs)
                 .background(isSelected ? Color.accentColor : Color.clear)
                 .foregroundStyle(isSelected ? .white : .primary)
                 .clipShape(Capsule())

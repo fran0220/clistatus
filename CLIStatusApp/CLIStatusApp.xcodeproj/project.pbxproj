@@ -1,0 +1,688 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04F7E0EE2ABF7AC4A06D7B4C /* claude.png in Resources */ = {isa = PBXBuildFile; fileRef = 6C3A5B6A00CCC71DE90C1D36 /* claude.png */; };
+		0BC1DF5731E3002AFF9C85A3 /* ClipboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80AB3819380D901FEB640D21 /* ClipboardItem.swift */; };
+		131FB5145CE1F7F309E12618 /* ClipboardItemRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8474E7BA0C7D78B5EAABDA29 /* ClipboardItemRow.swift */; };
+		1D11F0F643527AD2F0174157 /* CLITool.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9F39D7DA0D6E52703B8715 /* CLITool.swift */; };
+		1F168192DD4771017E32DDF4 /* CLIToolsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC400BF130F5D225692348A7 /* CLIToolsTabView.swift */; };
+		22D78533CD72CEDB04F15117 /* ClipboardTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 275A765EACE19906E5FD0F2F /* ClipboardTabView.swift */; };
+		2B19EE7500DAD602801A06AB /* ResourceCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48E9A69DEEC2A196021303C1 /* ResourceCardView.swift */; };
+		313F0C4857B07CBB90C9B47C /* VersionChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B047D4DAFCDFC08154056D93 /* VersionChecker.swift */; };
+		35032153061FF65FAC012D4F /* NpmPackageRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B235369505EA6627FF917307 /* NpmPackageRowView.swift */; };
+		3B37BA302A69AED6EA480AEA /* gemini.png in Resources */ = {isa = PBXBuildFile; fileRef = 047B3478C706397F93EF1C6E /* gemini.png */; };
+		3D2F8A2616DD040F89566F6E /* FileContextService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80981CC7416CB1F1ABC3938 /* FileContextService.swift */; };
+		43D98CADF4C34FFECAF099FE /* NpmPackageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F27C5100897D822F046D30 /* NpmPackageService.swift */; };
+		46CB4B86300124DA1F5EEB77 /* ClipboardEditorWindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A46C6133519117BBEF9E50 /* ClipboardEditorWindowManager.swift */; };
+		4C448892F404F39FF1E2CE1C /* PerformanceTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBD0BBB290D257FF706334A /* PerformanceTabView.swift */; };
+		4FC63037D2F69B705824F306 /* ProcessRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F527406F1523373DAF5DEA6D /* ProcessRowView.swift */; };
+		639EE3FAD564120CB2728EF3 /* ClipboardItemEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8185DE423B25E06CD85618 /* ClipboardItemEditorView.swift */; };
+		6793D21625CA8A049445384B /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6B091303A20C7D8D27A2F1 /* AppState.swift */; };
+		6BB75F9705853537CF75F7A6 /* StatusBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE0BC7AFF9FA1BBB322C569 /* StatusBadge.swift */; };
+		6BE5E36F5FB62BC2FDEBE55F /* MetricPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497BB03DA1DF142896733E7D /* MetricPill.swift */; };
+		6E019C300C080AA6C6B98DA1 /* CLIStatusApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0DD667D814EC37F4691A45 /* CLIStatusApp.swift */; };
+		6FD19A363458E94D5A7E0FBE /* NpmPackageStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D0BC24597028867876BA91 /* NpmPackageStatus.swift */; };
+		70EF8E23D68CF4DC8DEE1B45 /* AppSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BD23E6ED736B7A841C2424 /* AppSpacing.swift */; };
+		710029152058D7704C2ED53F /* FinderSyncPrincipal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92D9C868D54BDCC68E383E8 /* FinderSyncPrincipal.swift */; };
+		741E2BA2F619067433CE9EC2 /* ProcessGroupRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90190F1A187FADC13BCDED3E /* ProcessGroupRowView.swift */; };
+		766BB3B41A720823719444CD /* FooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282D0E2A06789E757B2A8F27 /* FooterView.swift */; };
+		7783AD325A833A14F5E8F683 /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 974C56B86F06E5D965F0EC60 /* AppColors.swift */; };
+		849D6F4A89ECA831337F168B /* SurfaceRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2B8CCBA9C8903592837773 /* SurfaceRow.swift */; };
+		84F6F728FD10FE49FDE7C14C /* ToolRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BCD0EE10AD3F38F5F833B5 /* ToolRowView.swift */; };
+		8992763D1A5EBD8E87EC729A /* amp.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B011B15393B73804D4A157C /* amp.png */; };
+		8A591A7CF01F85ABF3AB0285 /* NpmPackagesTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EF2BBD658EDCEF3EE301D6A /* NpmPackagesTabView.swift */; };
+		8BDD0A24D8E2CF09B8E18C31 /* ProcessMonitorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D531A8165FA11B6E6292CA11 /* ProcessMonitorService.swift */; };
+		8E70CF311FD4C77B2B06D910 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E2878DA1A9401A7B29B850 /* NotificationService.swift */; };
+		8EE922C8E77BCB52609F3A34 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568DAA35B0DEFBD339B81A57 /* AppDelegate.swift */; };
+		A2B252009F17555676C33276 /* UpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B75CA316DBBEBFF61E32B70 /* UpdateService.swift */; };
+		A300186A5BB437AD1F662881 /* AppFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E2F92093D724F9B47E055D /* AppFonts.swift */; };
+		A6F820DF174488DB95FD74A8 /* CLIStatusFinderSync.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 30A655C31F8BB04FDFCC2458 /* CLIStatusFinderSync.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A72798756CB990B4DF40F770 /* codex.png in Resources */ = {isa = PBXBuildFile; fileRef = 3444813BB4DDCE9DB8709A80 /* codex.png */; };
+		B5453E555E3D3DC5A8688C77 /* CopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D1F968AFFEA3B0C78A31DA /* CopyButton.swift */; };
+		C134A462FD6C78E2186E6BA5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBBBFA2B0C59FD805E5AC514 /* SettingsView.swift */; };
+		C28C6F98DD68FBE47CBB6F91 /* ShellExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C666B346620BC64C9947AF5 /* ShellExecutor.swift */; };
+		C4D2871D016D2A8E2C77FAAF /* FileContextService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80981CC7416CB1F1ABC3938 /* FileContextService.swift */; };
+		CA051995C69C8F8DF5192BFC /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC4B7096B7BA0BC98E6FF8D /* MenuBarView.swift */; };
+		CABAFD4514B29D0FC8047E4E /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BA25FD7D6C3F02DA506374 /* HeaderView.swift */; };
+		CDFFC05A180DBB50650800F2 /* ClipboardFocusKeeper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF1FB5F863100B8C46E360DC /* ClipboardFocusKeeper.swift */; };
+		CF64275372372BA0AAD2FC98 /* droid.png in Resources */ = {isa = PBXBuildFile; fileRef = 79B92CC0078B428E24D9844A /* droid.png */; };
+		D2172C285B5F824BD980ECEF /* AppResourceBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCA9A86B591B7B69A601443 /* AppResourceBundle.swift */; };
+		DB916C5D5C5E82BB0AF63F29 /* ClipboardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD9ECDB5891F4402DA71349C /* ClipboardService.swift */; };
+		DBD84CBDFAE531F6A9C57316 /* ToolStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 231149E4C705DD884BC50A8B /* ToolStatus.swift */; };
+		DDCDD21FFAA6C3AF06847570 /* UsageBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95B64DC182260B813650751 /* UsageBarView.swift */; };
+		F8C2C01B8F4750E571925A24 /* VersionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C88B3F26A581C860ABEC0A /* VersionInfo.swift */; };
+		FA46CC20D7AF20308464A10C /* ProcessStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43A3E0A9129DF531B6E6E94 /* ProcessStatus.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		98F273CCE6BE90A2DA58E92B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 34204970CB85F41C13E191D6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 403483F600D39FAA05328DB1;
+			remoteInfo = CLIStatusFinderSync;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5C403FCBF3E59FD8177C3523 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A6F820DF174488DB95FD74A8 /* CLIStatusFinderSync.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		01E2F92093D724F9B47E055D /* AppFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFonts.swift; sourceTree = "<group>"; };
+		047B3478C706397F93EF1C6E /* gemini.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gemini.png; sourceTree = "<group>"; };
+		07D0BC24597028867876BA91 /* NpmPackageStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NpmPackageStatus.swift; sourceTree = "<group>"; };
+		0EF2BBD658EDCEF3EE301D6A /* NpmPackagesTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NpmPackagesTabView.swift; sourceTree = "<group>"; };
+		17E2878DA1A9401A7B29B850 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		1C666B346620BC64C9947AF5 /* ShellExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShellExecutor.swift; sourceTree = "<group>"; };
+		1F6B091303A20C7D8D27A2F1 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		20A46C6133519117BBEF9E50 /* ClipboardEditorWindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardEditorWindowManager.swift; sourceTree = "<group>"; };
+		2206B493465DC965C51C0460 /* CLIStatusApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CLIStatusApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		231149E4C705DD884BC50A8B /* ToolStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolStatus.swift; sourceTree = "<group>"; };
+		275A765EACE19906E5FD0F2F /* ClipboardTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardTabView.swift; sourceTree = "<group>"; };
+		282D0E2A06789E757B2A8F27 /* FooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterView.swift; sourceTree = "<group>"; };
+		30A655C31F8BB04FDFCC2458 /* CLIStatusFinderSync.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CLIStatusFinderSync.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		3444813BB4DDCE9DB8709A80 /* codex.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = codex.png; sourceTree = "<group>"; };
+		3CBD0BBB290D257FF706334A /* PerformanceTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceTabView.swift; sourceTree = "<group>"; };
+		48E9A69DEEC2A196021303C1 /* ResourceCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceCardView.swift; sourceTree = "<group>"; };
+		497BB03DA1DF142896733E7D /* MetricPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricPill.swift; sourceTree = "<group>"; };
+		568DAA35B0DEFBD339B81A57 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		59C88B3F26A581C860ABEC0A /* VersionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionInfo.swift; sourceTree = "<group>"; };
+		5B75CA316DBBEBFF61E32B70 /* UpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateService.swift; sourceTree = "<group>"; };
+		6B011B15393B73804D4A157C /* amp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = amp.png; sourceTree = "<group>"; };
+		6C3A5B6A00CCC71DE90C1D36 /* claude.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = claude.png; sourceTree = "<group>"; };
+		79B92CC0078B428E24D9844A /* droid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = droid.png; sourceTree = "<group>"; };
+		7B56A86B69C7B0D26590096E /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		80AB3819380D901FEB640D21 /* ClipboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardItem.swift; sourceTree = "<group>"; };
+		82BCD0EE10AD3F38F5F833B5 /* ToolRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolRowView.swift; sourceTree = "<group>"; };
+		8474E7BA0C7D78B5EAABDA29 /* ClipboardItemRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardItemRow.swift; sourceTree = "<group>"; };
+		90190F1A187FADC13BCDED3E /* ProcessGroupRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessGroupRowView.swift; sourceTree = "<group>"; };
+		974C56B86F06E5D965F0EC60 /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
+		9AE0BC7AFF9FA1BBB322C569 /* StatusBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBadge.swift; sourceTree = "<group>"; };
+		9B8185DE423B25E06CD85618 /* ClipboardItemEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardItemEditorView.swift; sourceTree = "<group>"; };
+		9DCA9A86B591B7B69A601443 /* AppResourceBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppResourceBundle.swift; sourceTree = "<group>"; };
+		A92D9C868D54BDCC68E383E8 /* FinderSyncPrincipal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderSyncPrincipal.swift; sourceTree = "<group>"; };
+		B047D4DAFCDFC08154056D93 /* VersionChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionChecker.swift; sourceTree = "<group>"; };
+		B235369505EA6627FF917307 /* NpmPackageRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NpmPackageRowView.swift; sourceTree = "<group>"; };
+		BC0DD667D814EC37F4691A45 /* CLIStatusApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIStatusApp.swift; sourceTree = "<group>"; };
+		BD2B8CCBA9C8903592837773 /* SurfaceRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurfaceRow.swift; sourceTree = "<group>"; };
+		C3D1F968AFFEA3B0C78A31DA /* CopyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyButton.swift; sourceTree = "<group>"; };
+		C4F27C5100897D822F046D30 /* NpmPackageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NpmPackageService.swift; sourceTree = "<group>"; };
+		C80981CC7416CB1F1ABC3938 /* FileContextService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileContextService.swift; sourceTree = "<group>"; };
+		C95B64DC182260B813650751 /* UsageBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageBarView.swift; sourceTree = "<group>"; };
+		CBBBFA2B0C59FD805E5AC514 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		D531A8165FA11B6E6292CA11 /* ProcessMonitorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessMonitorService.swift; sourceTree = "<group>"; };
+		D5BA25FD7D6C3F02DA506374 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
+		D9BD23E6ED736B7A841C2424 /* AppSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSpacing.swift; sourceTree = "<group>"; };
+		DC400BF130F5D225692348A7 /* CLIToolsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIToolsTabView.swift; sourceTree = "<group>"; };
+		DE9F39D7DA0D6E52703B8715 /* CLITool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLITool.swift; sourceTree = "<group>"; };
+		E43A3E0A9129DF531B6E6E94 /* ProcessStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessStatus.swift; sourceTree = "<group>"; };
+		EBC4B7096B7BA0BC98E6FF8D /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		F527406F1523373DAF5DEA6D /* ProcessRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessRowView.swift; sourceTree = "<group>"; };
+		FD9ECDB5891F4402DA71349C /* ClipboardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardService.swift; sourceTree = "<group>"; };
+		FF1FB5F863100B8C46E360DC /* ClipboardFocusKeeper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardFocusKeeper.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		027CE7F04C8E3BA7221022A6 /* FinderSync */ = {
+			isa = PBXGroup;
+			children = (
+				A92D9C868D54BDCC68E383E8 /* FinderSyncPrincipal.swift */,
+			);
+			path = FinderSync;
+			sourceTree = "<group>";
+		};
+		126088EBB6EA2D5701D71F45 /* CLIStatusApp */ = {
+			isa = PBXGroup;
+			children = (
+				C5E1B913620E2E79D10D0329 /* Models */,
+				3414B52F2ED62BA068A0BCE5 /* Resources */,
+				62FEE86E8000B7104DAA4888 /* Services */,
+				C3EFADD8E3B8FD75E7D56391 /* Utilities */,
+				9BEB682033A0394E305FF8D3 /* ViewModels */,
+				EEBB906D06C093B21F786722 /* Views */,
+				BC0DD667D814EC37F4691A45 /* CLIStatusApp.swift */,
+			);
+			path = CLIStatusApp;
+			sourceTree = "<group>";
+		};
+		1FAB8D46CC409F2F7393174D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2206B493465DC965C51C0460 /* CLIStatusApp.app */,
+				30A655C31F8BB04FDFCC2458 /* CLIStatusFinderSync.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3414B52F2ED62BA068A0BCE5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				EBC81B5C1963569F3A412AAB /* ToolIcons */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		62FEE86E8000B7104DAA4888 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				FD9ECDB5891F4402DA71349C /* ClipboardService.swift */,
+				C80981CC7416CB1F1ABC3938 /* FileContextService.swift */,
+				17E2878DA1A9401A7B29B850 /* NotificationService.swift */,
+				C4F27C5100897D822F046D30 /* NpmPackageService.swift */,
+				D531A8165FA11B6E6292CA11 /* ProcessMonitorService.swift */,
+				1C666B346620BC64C9947AF5 /* ShellExecutor.swift */,
+				5B75CA316DBBEBFF61E32B70 /* UpdateService.swift */,
+				B047D4DAFCDFC08154056D93 /* VersionChecker.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		82AFB824DAB775A812B3D76E /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				C3D1F968AFFEA3B0C78A31DA /* CopyButton.swift */,
+				497BB03DA1DF142896733E7D /* MetricPill.swift */,
+				48E9A69DEEC2A196021303C1 /* ResourceCardView.swift */,
+				9AE0BC7AFF9FA1BBB322C569 /* StatusBadge.swift */,
+				BD2B8CCBA9C8903592837773 /* SurfaceRow.swift */,
+				C95B64DC182260B813650751 /* UsageBarView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		9BEB682033A0394E305FF8D3 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				1F6B091303A20C7D8D27A2F1 /* AppState.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		C3EFADD8E3B8FD75E7D56391 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				974C56B86F06E5D965F0EC60 /* AppColors.swift */,
+				568DAA35B0DEFBD339B81A57 /* AppDelegate.swift */,
+				01E2F92093D724F9B47E055D /* AppFonts.swift */,
+				9DCA9A86B591B7B69A601443 /* AppResourceBundle.swift */,
+				D9BD23E6ED736B7A841C2424 /* AppSpacing.swift */,
+				20A46C6133519117BBEF9E50 /* ClipboardEditorWindowManager.swift */,
+				FF1FB5F863100B8C46E360DC /* ClipboardFocusKeeper.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		C5E1B913620E2E79D10D0329 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				80AB3819380D901FEB640D21 /* ClipboardItem.swift */,
+				DE9F39D7DA0D6E52703B8715 /* CLITool.swift */,
+				07D0BC24597028867876BA91 /* NpmPackageStatus.swift */,
+				E43A3E0A9129DF531B6E6E94 /* ProcessStatus.swift */,
+				231149E4C705DD884BC50A8B /* ToolStatus.swift */,
+				59C88B3F26A581C860ABEC0A /* VersionInfo.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		CD61D91999A65E09D754A25B = {
+			isa = PBXGroup;
+			children = (
+				126088EBB6EA2D5701D71F45 /* CLIStatusApp */,
+				027CE7F04C8E3BA7221022A6 /* FinderSync */,
+				1FAB8D46CC409F2F7393174D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EBC81B5C1963569F3A412AAB /* ToolIcons */ = {
+			isa = PBXGroup;
+			children = (
+				7B56A86B69C7B0D26590096E /* .gitkeep */,
+				6B011B15393B73804D4A157C /* amp.png */,
+				6C3A5B6A00CCC71DE90C1D36 /* claude.png */,
+				3444813BB4DDCE9DB8709A80 /* codex.png */,
+				79B92CC0078B428E24D9844A /* droid.png */,
+				047B3478C706397F93EF1C6E /* gemini.png */,
+			);
+			path = ToolIcons;
+			sourceTree = "<group>";
+		};
+		EEBB906D06C093B21F786722 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				82AFB824DAB775A812B3D76E /* Components */,
+				9B8185DE423B25E06CD85618 /* ClipboardItemEditorView.swift */,
+				8474E7BA0C7D78B5EAABDA29 /* ClipboardItemRow.swift */,
+				275A765EACE19906E5FD0F2F /* ClipboardTabView.swift */,
+				DC400BF130F5D225692348A7 /* CLIToolsTabView.swift */,
+				282D0E2A06789E757B2A8F27 /* FooterView.swift */,
+				D5BA25FD7D6C3F02DA506374 /* HeaderView.swift */,
+				EBC4B7096B7BA0BC98E6FF8D /* MenuBarView.swift */,
+				B235369505EA6627FF917307 /* NpmPackageRowView.swift */,
+				0EF2BBD658EDCEF3EE301D6A /* NpmPackagesTabView.swift */,
+				3CBD0BBB290D257FF706334A /* PerformanceTabView.swift */,
+				90190F1A187FADC13BCDED3E /* ProcessGroupRowView.swift */,
+				F527406F1523373DAF5DEA6D /* ProcessRowView.swift */,
+				CBBBFA2B0C59FD805E5AC514 /* SettingsView.swift */,
+				82BCD0EE10AD3F38F5F833B5 /* ToolRowView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3F38569AFBB6E7B7FCEA561B /* CLIStatusApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 32E02A1110D05B58C5FD6351 /* Build configuration list for PBXNativeTarget "CLIStatusApp" */;
+			buildPhases = (
+				B9D8F6095E63E09A98542EFA /* Sources */,
+				412AC5232CA36B2403461D2D /* Resources */,
+				5C403FCBF3E59FD8177C3523 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BC2D1FD400EBAB139CBD1B0D /* PBXTargetDependency */,
+			);
+			name = CLIStatusApp;
+			packageProductDependencies = (
+			);
+			productName = CLIStatusApp;
+			productReference = 2206B493465DC965C51C0460 /* CLIStatusApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		403483F600D39FAA05328DB1 /* CLIStatusFinderSync */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 35A3639C2AC2DE472B979BC3 /* Build configuration list for PBXNativeTarget "CLIStatusFinderSync" */;
+			buildPhases = (
+				F138FE8795AA9616CEDE8B29 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CLIStatusFinderSync;
+			packageProductDependencies = (
+			);
+			productName = CLIStatusFinderSync;
+			productReference = 30A655C31F8BB04FDFCC2458 /* CLIStatusFinderSync.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		34204970CB85F41C13E191D6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					3F38569AFBB6E7B7FCEA561B = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					403483F600D39FAA05328DB1 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = ED4B0AFAD09C6ACE83BEC5D6 /* Build configuration list for PBXProject "CLIStatusApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = CD61D91999A65E09D754A25B;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 54;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3F38569AFBB6E7B7FCEA561B /* CLIStatusApp */,
+				403483F600D39FAA05328DB1 /* CLIStatusFinderSync */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		412AC5232CA36B2403461D2D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8992763D1A5EBD8E87EC729A /* amp.png in Resources */,
+				04F7E0EE2ABF7AC4A06D7B4C /* claude.png in Resources */,
+				A72798756CB990B4DF40F770 /* codex.png in Resources */,
+				CF64275372372BA0AAD2FC98 /* droid.png in Resources */,
+				3B37BA302A69AED6EA480AEA /* gemini.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B9D8F6095E63E09A98542EFA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7783AD325A833A14F5E8F683 /* AppColors.swift in Sources */,
+				8EE922C8E77BCB52609F3A34 /* AppDelegate.swift in Sources */,
+				A300186A5BB437AD1F662881 /* AppFonts.swift in Sources */,
+				D2172C285B5F824BD980ECEF /* AppResourceBundle.swift in Sources */,
+				70EF8E23D68CF4DC8DEE1B45 /* AppSpacing.swift in Sources */,
+				6793D21625CA8A049445384B /* AppState.swift in Sources */,
+				6E019C300C080AA6C6B98DA1 /* CLIStatusApp.swift in Sources */,
+				1D11F0F643527AD2F0174157 /* CLITool.swift in Sources */,
+				1F168192DD4771017E32DDF4 /* CLIToolsTabView.swift in Sources */,
+				46CB4B86300124DA1F5EEB77 /* ClipboardEditorWindowManager.swift in Sources */,
+				CDFFC05A180DBB50650800F2 /* ClipboardFocusKeeper.swift in Sources */,
+				0BC1DF5731E3002AFF9C85A3 /* ClipboardItem.swift in Sources */,
+				639EE3FAD564120CB2728EF3 /* ClipboardItemEditorView.swift in Sources */,
+				131FB5145CE1F7F309E12618 /* ClipboardItemRow.swift in Sources */,
+				DB916C5D5C5E82BB0AF63F29 /* ClipboardService.swift in Sources */,
+				22D78533CD72CEDB04F15117 /* ClipboardTabView.swift in Sources */,
+				B5453E555E3D3DC5A8688C77 /* CopyButton.swift in Sources */,
+				C4D2871D016D2A8E2C77FAAF /* FileContextService.swift in Sources */,
+				766BB3B41A720823719444CD /* FooterView.swift in Sources */,
+				CABAFD4514B29D0FC8047E4E /* HeaderView.swift in Sources */,
+				CA051995C69C8F8DF5192BFC /* MenuBarView.swift in Sources */,
+				6BE5E36F5FB62BC2FDEBE55F /* MetricPill.swift in Sources */,
+				8E70CF311FD4C77B2B06D910 /* NotificationService.swift in Sources */,
+				35032153061FF65FAC012D4F /* NpmPackageRowView.swift in Sources */,
+				43D98CADF4C34FFECAF099FE /* NpmPackageService.swift in Sources */,
+				6FD19A363458E94D5A7E0FBE /* NpmPackageStatus.swift in Sources */,
+				8A591A7CF01F85ABF3AB0285 /* NpmPackagesTabView.swift in Sources */,
+				4C448892F404F39FF1E2CE1C /* PerformanceTabView.swift in Sources */,
+				741E2BA2F619067433CE9EC2 /* ProcessGroupRowView.swift in Sources */,
+				8BDD0A24D8E2CF09B8E18C31 /* ProcessMonitorService.swift in Sources */,
+				4FC63037D2F69B705824F306 /* ProcessRowView.swift in Sources */,
+				FA46CC20D7AF20308464A10C /* ProcessStatus.swift in Sources */,
+				2B19EE7500DAD602801A06AB /* ResourceCardView.swift in Sources */,
+				C134A462FD6C78E2186E6BA5 /* SettingsView.swift in Sources */,
+				C28C6F98DD68FBE47CBB6F91 /* ShellExecutor.swift in Sources */,
+				6BB75F9705853537CF75F7A6 /* StatusBadge.swift in Sources */,
+				849D6F4A89ECA831337F168B /* SurfaceRow.swift in Sources */,
+				84F6F728FD10FE49FDE7C14C /* ToolRowView.swift in Sources */,
+				DBD84CBDFAE531F6A9C57316 /* ToolStatus.swift in Sources */,
+				A2B252009F17555676C33276 /* UpdateService.swift in Sources */,
+				DDCDD21FFAA6C3AF06847570 /* UsageBarView.swift in Sources */,
+				313F0C4857B07CBB90C9B47C /* VersionChecker.swift in Sources */,
+				F8C2C01B8F4750E571925A24 /* VersionInfo.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F138FE8795AA9616CEDE8B29 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D2F8A2616DD040F89566F6E /* FileContextService.swift in Sources */,
+				710029152058D7704C2ED53F /* FinderSyncPrincipal.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BC2D1FD400EBAB139CBD1B0D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 403483F600D39FAA05328DB1 /* CLIStatusFinderSync */;
+			targetProxy = 98F273CCE6BE90A2DA58E92B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		02657B28D3B6B143213ED768 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = FinderSync/CLIStatusFinderSync.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FinderSync/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fan.CLIStatusApp.FinderSync;
+				PRODUCT_NAME = CLIStatusFinderSync;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		48C920FB8736644E4E05455C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		6BB6F502ED112D8585298B18 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = FinderSync/CLIStatusFinderSync.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FinderSync/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fan.CLIStatusApp.FinderSync;
+				PRODUCT_NAME = CLIStatusFinderSync;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		A27205730F40EBF46DDCF6AA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = CLIStatusApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fan.CLIStatusApp;
+				PRODUCT_NAME = CLIStatusApp;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		CD4E14D3702487E93F169F71 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = CLIStatusApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fan.CLIStatusApp;
+				PRODUCT_NAME = CLIStatusApp;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F2A57C805EBF1E51423A6548 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		32E02A1110D05B58C5FD6351 /* Build configuration list for PBXNativeTarget "CLIStatusApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CD4E14D3702487E93F169F71 /* Debug */,
+				A27205730F40EBF46DDCF6AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		35A3639C2AC2DE472B979BC3 /* Build configuration list for PBXNativeTarget "CLIStatusFinderSync" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6BB6F502ED112D8585298B18 /* Debug */,
+				02657B28D3B6B143213ED768 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		ED4B0AFAD09C6ACE83BEC5D6 /* Build configuration list for PBXProject "CLIStatusApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				48C920FB8736644E4E05455C /* Debug */,
+				F2A57C805EBF1E51423A6548 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 34204970CB85F41C13E191D6 /* Project object */;
+}

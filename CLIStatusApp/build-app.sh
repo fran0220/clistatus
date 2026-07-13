@@ -1,63 +1,54 @@
 #!/bin/bash
-# Build and package cliadmin as .app bundle
+# Build and package cliadmin.app (host + Finder Sync extension) via Xcode.
 
-set -e
+set -euo pipefail
 cd "$(dirname "$0")"
 
-echo "Building..."
-swift build -c release
+if ! command -v xcodegen >/dev/null 2>&1; then
+  echo "error: xcodegen is required. Install with: brew install xcodegen" >&2
+  exit 1
+fi
 
-echo "Packaging..."
+echo "Generating Xcode project..."
+xcodegen generate
+
+DERIVED=".build/DerivedData"
 APP_DIR=".build/cliadmin.app"
-rm -rf "$APP_DIR"
-mkdir -p "$APP_DIR/Contents/MacOS"
-mkdir -p "$APP_DIR/Contents/Resources"
+rm -rf "$DERIVED" "$APP_DIR"
 
-cp .build/release/CLIStatusApp "$APP_DIR/Contents/MacOS/"
+echo "Building with xcodebuild..."
+xcodebuild \
+  -project CLIStatusApp.xcodeproj \
+  -scheme CLIStatusApp \
+  -configuration Release \
+  -derivedDataPath "$DERIVED" \
+  CODE_SIGN_IDENTITY="-" \
+  CODE_SIGNING_ALLOWED=YES \
+  CODE_SIGNING_REQUIRED=NO \
+  build
 
-# Copy SwiftPM resource bundles if present
-for bundle in .build/release/*.bundle; do
-    if [ -d "$bundle" ]; then
-        cp -R "$bundle" "$APP_DIR/Contents/Resources/"
-    fi
-done
+BUILT_APP=$(find "$DERIVED/Build/Products/Release" -maxdepth 1 -name "CLIStatusApp.app" | head -n 1)
+if [ -z "$BUILT_APP" ] || [ ! -d "$BUILT_APP" ]; then
+  echo "error: CLIStatusApp.app not found in build products" >&2
+  exit 1
+fi
 
-cat > "$APP_DIR/Contents/Info.plist" << 'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleDevelopmentRegion</key>
-    <string>en</string>
-    <key>CFBundleExecutable</key>
-    <string>CLIStatusApp</string>
-    <key>CFBundleIdentifier</key>
-    <string>com.fan.CLIStatusApp</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
-    <key>CFBundleName</key>
-    <string>cliadmin</string>
-    <key>CFBundleDisplayName</key>
-    <string>cliadmin</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>1.0.0</string>
-    <key>CFBundleVersion</key>
-    <string>1</string>
-    <key>LSMinimumSystemVersion</key>
-    <string>14.0</string>
-    <key>LSUIElement</key>
-    <true/>
-    <key>NSHumanReadableCopyright</key>
-    <string>Copyright © 2024. All rights reserved.</string>
-    <key>NSHighResolutionCapable</key>
-    <true/>
-</dict>
-</plist>
-EOF
+cp -R "$BUILT_APP" "$APP_DIR"
+
+# Prefer display name for install path convenience
+if [ -d "$APP_DIR" ]; then
+  /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName cliadmin" "$APP_DIR/Contents/Info.plist" 2>/dev/null || true
+fi
+
+APPEX="$APP_DIR/Contents/PlugIns/CLIStatusFinderSync.appex"
+if [ ! -d "$APPEX" ]; then
+  echo "error: Finder Sync appex missing at $APPEX" >&2
+  exit 1
+fi
 
 echo "Done! App bundle created at: $APP_DIR"
+echo "Finder Sync extension: $APPEX"
 echo ""
 echo "To run: open $APP_DIR"
-echo "To install: cp -r $APP_DIR /Applications/"
+echo "To install: cp -R $APP_DIR /Applications/cliadmin.app"
+echo "Then enable: System Settings → Privacy & Security → Extensions → Finder Extensions"
